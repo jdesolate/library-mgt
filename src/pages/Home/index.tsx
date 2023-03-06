@@ -5,14 +5,14 @@ import { Button, PageContainer } from '../../components';
 
 import * as S from './styles';
 
-export default function Register() {
+export default function Home() {
   const navigate = useNavigate();
 
   function navigateToUrl(url: string) {
-    if (url === '/login') {
-      navigate('/');
+    if (url === 'registration') {
+      navigate(`/${url}`);
     } else {
-      navigate(`/register/${url}`);
+      navigate(`/login/${url}`);
     }
   }
 
@@ -26,11 +26,11 @@ export default function Register() {
       </S.LogoContainer>
       <S.Title>LCCL Book Availability System</S.Title>
       <S.HomeButtonContainer>
-        <Button text="SIGN UP AS STUDENT" onClick={() => navigateToUrl('student')} />
-        <Button text="SIGN UP AS ADMIN" onClick={() => navigateToUrl('admin')} />
+        <Button text="LOG IN AS STUDENT" onClick={() => navigateToUrl('student')} />
+        <Button text="LOG IN AS ADMIN" onClick={() => navigateToUrl('admin')} />
         <S.FlexRow>
-          <p>Already have an account?</p>
-          <S.SignUpButton onClick={() => navigateToUrl('/login')}>Log in</S.SignUpButton>
+          <p>Don&apos;t have an account?</p>
+          <S.SignUpButton onClick={() => navigateToUrl('registration')}>Sign up</S.SignUpButton>
         </S.FlexRow>
       </S.HomeButtonContainer>
     </PageContainer>
