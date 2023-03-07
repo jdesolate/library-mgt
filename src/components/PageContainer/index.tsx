@@ -1,3 +1,7 @@
+import {
+  AppShell, Container, Group, Paper, Stack,
+} from '@mantine/core';
+
 import CustomContainer from './styles';
 
 type Props = {
@@ -8,7 +12,15 @@ function PageContainer(props: Props) {
   const { children } = props;
 
   return (
-    <CustomContainer>{children}</CustomContainer>
+    <AppShell
+      fixed
+    >
+      <CustomContainer>
+        <Stack align="center">
+          {children}
+        </Stack>
+      </CustomContainer>
+    </AppShell>
   );
 }
 

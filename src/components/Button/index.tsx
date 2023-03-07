@@ -1,16 +1,17 @@
+import { ButtonProps } from '@mantine/core/lib/Button';
+
 import CustomButton from './styles';
 
-type Props = {
+type Props = ButtonProps & {
   text: string;
-  onClick: () => void;
 };
 
 function Button(props: Props) {
-  const { text, onClick } = props;
+  const { text, ...restProps } = props;
 
   return (
     <div>
-      <CustomButton onClick={onClick}>{text}</CustomButton>
+      <CustomButton {...restProps}>{text}</CustomButton>
     </div>
   );
 }

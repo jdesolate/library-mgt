@@ -4,14 +4,15 @@ export const BackgroundContainer = styled.div`
   margin: 0;
   padding: 0;
   position: absolute;
+  background: url("src/assets/school_bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
   filter: blur(2px);
-  z-index: -1;
-  object-fit: cover;
 `;
 
 export const LogoContainer = styled.div`
   .logo {
-    height: 6em;
+    height: 10em;
     padding: 1.5em;
     will-change: filter;
     transition: filter 300ms;
@@ -40,6 +41,7 @@ export const LogoContainer = styled.div`
 `;
 
 export const Title = styled.h1`
+  z-index: 1;
   width: 664px;
   height: 50px;
   left: 308px;
@@ -59,15 +61,22 @@ export const Title = styled.h1`
 
 export const HomeButtonContainer = styled.div`
   margin-top: 1rem;
+  padding: 2rem 2rem 0.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
 `;
 
 export const FlexRow = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  color: white;
 `;
 
 export const SignUpButton = styled.a`
