@@ -6,7 +6,7 @@ const CustomButton = styled.button`
   left: 490px;
   top: 418px;
 
-  background: #FFFFFF;
+  background: #2148C0;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
 
@@ -18,8 +18,6 @@ const CustomButton = styled.button`
 
   text-align: center;
   text-transform: uppercase;
-
-  color: #2148C0;
 `;
 
 export default CustomButton;

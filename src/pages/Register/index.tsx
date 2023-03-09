@@ -26,8 +26,8 @@ export default function Register() {
       </S.LogoContainer>
       <S.Title>LCCL Book Availability System</S.Title>
       <S.HomeButtonContainer>
-        <Button text="SIGN UP AS STUDENT" onClick={() => navigateToUrl('student')} />
-        <Button text="SIGN UP AS ADMIN" onClick={() => navigateToUrl('admin')} />
+        <Button text="SIGN UP AS STUDENT" />
+        <Button text="SIGN UP AS ADMIN" />
         <S.FlexRow>
           <p>Already have an account?</p>
           <S.SignUpButton onClick={() => navigateToUrl('/login')}>Log in</S.SignUpButton>

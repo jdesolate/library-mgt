@@ -2,6 +2,7 @@ import {
   Overlay, Image, Anchor, Group, Stack, PasswordInput, TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { IconLock, IconUser } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, PageContainer } from '../../components';
@@ -50,6 +51,7 @@ export default function Home() {
             <TextInput
               required
               error={form.errors.email && 'Invalid email'}
+              icon={<IconUser color="#2148C0" />}
               placeholder="EMAIL ADDRESS"
               size="md"
               value={form.values.email}
@@ -64,17 +66,15 @@ export default function Home() {
                 form.errors.password
                 && 'Password should include at least 6 characters'
               }
+              icon={<IconLock color="#2148C0" />}
               placeholder="PASSWORD"
               size="md"
-              type="password"
               value={form.values.password}
-              onChange={(event) => form.setFieldValue(
-                'password',
-                event.currentTarget.value,
-              )}
+              onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
             />
             <Group position="right">
               <Anchor<'a'>
+                color="white"
                 size="sm"
                 type="button"
               >

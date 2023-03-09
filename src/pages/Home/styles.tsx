@@ -1,3 +1,4 @@
+import { TextInput } from '@mantine/core';
 import styled from 'styled-components';
 
 export const BackgroundContainer = styled.div`
