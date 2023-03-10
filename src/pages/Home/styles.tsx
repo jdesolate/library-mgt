@@ -1,4 +1,4 @@
-import { TextInput } from '@mantine/core';
+import { Text, TextInput } from '@mantine/core';
 import styled from 'styled-components';
 
 export const BackgroundContainer = styled.div`
@@ -41,7 +41,7 @@ export const LogoContainer = styled.div`
   }
 `;
 
-export const Title = styled.h1`
+export const Title = styled(Text)`
   z-index: 1;
   width: 664px;
   height: 50px;

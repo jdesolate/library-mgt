@@ -1,7 +1,5 @@
-import { initializeApp } from 'firebase/app';
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -9,10 +7,7 @@ import {
   User,
 } from 'firebase/auth';
 
-import firebaseConfig from '../configs/firebaseConfig';
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import auth from '../configs/firebaseConfig';
 
 async function forgotPassword(email: string) {
   return sendPasswordResetEmail(auth, email);
