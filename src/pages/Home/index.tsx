@@ -13,10 +13,13 @@ import {
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
+import { useState } from 'react';
 
 import { Button, PageContainer } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
+
+import ForgotPassword from './ForgotPassword';
 
 import * as S from './styles';
 
@@ -27,6 +30,7 @@ enum ButtonType {
 
 export default function Home() {
   const [type, toggle] = useToggle(['login', 'register']);
+  const [isForgotPasswordClicked, setIsForgotPasswordClicked] = useState<boolean>(false);
   const authContext = useAuth();
   const isTypeRegister = type === 'register';
   const toggleAuthText = isTypeRegister ? ButtonType.LOGIN : ButtonType.SIGNUP;
@@ -52,6 +56,10 @@ export default function Home() {
     form.reset();
   };
 
+  const toggleForgotPassword = () => {
+    setIsForgotPasswordClicked((previousValue) => !previousValue);
+  };
+
   async function handleRegister() {
     const userCredentials = await authContext?.register(form.values.email, form.values.password);
 
@@ -63,6 +71,14 @@ export default function Home() {
 
   async function handleLogin() {
     await authContext?.login(form.values.email, form.values.password);
+  }
+
+  function handleAuth() {
+    if (isTypeRegister) {
+      handleRegister();
+    } else {
+      handleLogin();
+    }
   }
 
   if (authContext?.user && isTypeRegister) {
@@ -77,6 +93,7 @@ export default function Home() {
         color="white"
         size="sm"
         type="button"
+        onClick={toggleForgotPassword}
       >
         Forgot password?
       </Anchor>
@@ -95,13 +112,46 @@ export default function Home() {
     />
   );
 
-  function handleAuth() {
-    if (isTypeRegister) {
-      handleRegister();
-    } else {
-      handleLogin();
-    }
-  }
+  const renderForm = isForgotPasswordClicked ? (
+    <ForgotPassword toggleForgotPasswordState={setIsForgotPasswordClicked} />
+  ) : (
+    <form onSubmit={form.onSubmit(handleAuth)}>
+      <Stack spacing="md">
+        <TextInput
+          required
+          color="white"
+          error={form.errors.email && 'Invalid email'}
+          icon={<IconUser color="#2148C0" />}
+          placeholder="Email Address"
+          size="md"
+          value={form.values.email}
+          onChange={(event) => form.setFieldValue(
+            'email',
+            event.currentTarget.value,
+          )}
+        />
+        <PasswordInput
+          required
+          error={
+            form.errors.password
+            && 'Password should include at least 6 characters'
+          }
+          icon={<IconLock color="#2148C0" />}
+          placeholder="Password"
+          size="md"
+          value={form.values.password}
+          onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
+        />
+        {renderAccountTypeField}
+        {renderForgotPassword}
+        <Button text={submitButtonText} type="submit" />
+        <Flex justify="center">
+          <Text color="white">{toggleAuthDesc}</Text>
+          <S.SignUpButton onClick={toggleAuth}>{toggleAuthText}</S.SignUpButton>
+        </Flex>
+      </Stack>
+    </form>
+  );
 
   return (
     <PageContainer>
@@ -113,42 +163,7 @@ export default function Home() {
       </S.LogoContainer>
       <S.Title>LCCL Book Availability System</S.Title>
       <S.HomeButtonContainer>
-        <form onSubmit={form.onSubmit(handleAuth)}>
-          <Stack spacing="md">
-            <TextInput
-              required
-              color="white"
-              error={form.errors.email && 'Invalid email'}
-              icon={<IconUser color="#2148C0" />}
-              placeholder="Email Address"
-              size="md"
-              value={form.values.email}
-              onChange={(event) => form.setFieldValue(
-                'email',
-                event.currentTarget.value,
-              )}
-            />
-            <PasswordInput
-              required
-              error={
-                form.errors.password
-                && 'Password should include at least 6 characters'
-              }
-              icon={<IconLock color="#2148C0" />}
-              placeholder="Password"
-              size="md"
-              value={form.values.password}
-              onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            />
-            {renderAccountTypeField}
-            {renderForgotPassword}
-            <Button text={submitButtonText} type="submit" />
-            <Flex justify="center">
-              <Text color="white">{toggleAuthDesc}</Text>
-              <S.SignUpButton onClick={toggleAuth}>{toggleAuthText}</S.SignUpButton>
-            </Flex>
-          </Stack>
-        </form>
+        {renderForm}
       </S.HomeButtonContainer>
     </PageContainer>
   );
