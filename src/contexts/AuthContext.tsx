@@ -2,7 +2,6 @@
 /* eslint-disable consistent-return */
 import {
   createUserWithEmailAndPassword,
-  GoogleAuthProvider,
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
@@ -14,6 +13,7 @@ import {
 import {
   createContext, useContext, useEffect, useState,
 } from 'react';
+import swal from 'sweetalert';
 
 import auth from '../configs/firebaseConfig';
 
@@ -23,6 +23,13 @@ type LibraryUser = {
   emailVerified: boolean,
   uid: string,
 };
+
+enum SweetAlertEnum {
+  ERROR = 'error',
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+}
 
 type UserContextType = {
   user: LibraryUser | null,
@@ -69,23 +76,21 @@ export function AuthContextProvider({
       const createUserWithEmailResponse = await createUserWithEmailAndPassword(auth, email, password);
 
       if (createUserWithEmailResponse.user) {
-        console.log('Successfully created an account!');
+        swal('SIGN UP', 'Successfully created an account!', SweetAlertEnum.SUCCESS);
 
         return createUserWithEmailResponse;
       }
     } catch (e) {
-      console.log('Failed to register account.');
-
-      console.log(e);
+      swal('SIGN UP', 'Failed to register account.', SweetAlertEnum.ERROR);
     }
   };
 
   const verify = (user: User) => {
     try {
       sendEmailVerification(user);
-      console.log('We have sent a verification link to your email! Please open it to verify your account.');
+      swal('Verification', 'We have sent a verification link to your email! Please open it to verify your account.', SweetAlertEnum.SUCCESS);
     } catch (e) {
-      console.log('Failed to send email verification.');
+      swal('Verification', 'Failed to send email verification.', SweetAlertEnum.ERROR);
     }
   };
 
@@ -99,25 +104,26 @@ export function AuthContextProvider({
       const signInWithEmailResponse = await signInWithEmailAndPassword(auth, email, password);
 
       if (signInWithEmailResponse && signInWithEmailResponse.user.emailVerified) {
-        console.log('Successfully signed in.');
+        swal('LOG IN', 'Successfully signed in.', SweetAlertEnum.SUCCESS);
 
         return signInWithEmailResponse;
       } if (signInWithEmailResponse && !signInWithEmailResponse.user.emailVerified) {
-        console.log('Your account has not been verified yet. Please check your email.');
+        swal('LOG IN', 'Your account has not been verified yet. Please check your email.', SweetAlertEnum.WARNING);
         logout();
       }
     } catch (e) {
-      console.log('Invalid user credentials.');
+      swal('LOG IN', 'Invalid user credentials.', SweetAlertEnum.ERROR);
     }
   };
 
   const reset = async (email: string) => {
     try {
       const resetResponse = await sendPasswordResetEmail(auth, email);
+      swal('Reset Password', 'Successfully sent reset password to email.', SweetAlertEnum.SUCCESS);
 
       return resetResponse;
     } catch (e) {
-      console.log('Failed to send reset password to email.');
+      swal('Reset Password', 'Failed to send reset password to email.', SweetAlertEnum.ERROR);
     }
   };
 

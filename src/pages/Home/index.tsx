@@ -35,7 +35,7 @@ export default function Home() {
 
   const form = useForm({
     initialValues: {
-      accountType: '',
+      accountType: AccountType.student,
       email: '',
       password: '',
     },
@@ -53,7 +53,6 @@ export default function Home() {
   };
 
   async function handleRegister() {
-    console.log('Registering!');
     const userCredentials = await authContext?.register(form.values.email, form.values.password);
 
     if (userCredentials?.user) {
@@ -63,8 +62,6 @@ export default function Home() {
   }
 
   async function handleLogin() {
-    console.log('Logging IN!');
-
     await authContext?.login(form.values.email, form.values.password);
   }
 
