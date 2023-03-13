@@ -15,11 +15,13 @@ import { useToggle } from '@mantine/hooks';
 import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import SchoolBG from '../../assets/school_bg.png';
 import SchoolLogo from '../../assets/school_logo.png';
 
 import { Button, PageContainer } from '../../components';
+import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
 
@@ -36,6 +38,7 @@ export default function Home() {
   const [type, toggle] = useToggle(['login', 'register']);
   const [isForgotPasswordClicked, setIsForgotPasswordClicked] = useState<boolean>(false);
   const authContext = useAuth();
+  const navigate = useNavigate();
   const isTypeRegister = type === 'register';
   const toggleAuthText = isTypeRegister ? ButtonType.LOGIN : ButtonType.SIGNUP;
   const submitButtonText = !isTypeRegister ? ButtonType.LOGIN : ButtonType.SIGNUP;
@@ -75,6 +78,7 @@ export default function Home() {
 
   async function handleLogin() {
     await authContext?.login(form.values.email, form.values.password);
+    navigate(routes.LIBRARY);
   }
 
   function handleAuth() {
@@ -87,8 +91,6 @@ export default function Home() {
 
   if (authContext?.user && isTypeRegister) {
     toggleAuth();
-  } else if (authContext?.user?.emailVerified) {
-    // route to appropriate dashboard for admin or user
   }
 
   const renderForgotPassword = !isTypeRegister && (

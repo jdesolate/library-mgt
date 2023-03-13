@@ -2,27 +2,20 @@
 /* eslint-disable consistent-return */
 import {
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
-  User,
+  User as FirebaseUserDetails,
   UserCredential,
 } from 'firebase/auth';
-import {
-  createContext, useContext, useEffect, useState,
-} from 'react';
+import { useEffect, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import swal from 'sweetalert';
 
 import auth from '../configs/firebaseConfig';
-
-type LibraryUser = {
-  displayName: string,
-  email: string,
-  emailVerified: boolean,
-  uid: string,
-};
+import { LibraryUser } from '../types/User.type';
+import createGenericContext from '../utils/Context';
 
 enum SweetAlertEnum {
   ERROR = 'error',
@@ -37,39 +30,51 @@ type UserContextType = {
   logout: () => void,
   register: (email: string, password: string) => Promise<UserCredential | undefined>,
   reset: (email: string) => void,
-  verify: (user: User) => void,
+  verify: (user: FirebaseUserDetails) => void,
+  firebaseUserDetails?: FirebaseUserDetails | null;
+  loadingFirebaseUserDetails: boolean;
+  loadingUserDetails: boolean;
+  userDetails: LibraryUser | null;
+  setUserDetails: (params: LibraryUser) => void;
 };
 
-const AuthContext = createContext<UserContextType | null>(null);
+interface Props {
+  children: React.ReactNode;
+}
 
-export const useAuth = () => useContext(AuthContext);
+const [useAuth, AuthContextProvider] = createGenericContext<UserContextType>();
 
-export function AuthContextProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function AuthProvider(props: Props) {
+  const { children } = props;
   const [user, setUser] = useState<LibraryUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [firebaseUserDetails, loadingFirebaseUserDetails] = useAuthState(auth);
+  const [userDetails, setUserDetails] = useState<LibraryUser | null>(null);
+  const [loadingUserDetails, setLoadingUserDetails] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser({
-          displayName: user.displayName ?? '',
-          email: user.email ?? '',
-          emailVerified: user.emailVerified,
-          uid: user.uid,
+    if (loadingFirebaseUserDetails) {
+      return;
+    }
+
+    async function getUserProfileDetails() {
+      setLoadingUserDetails(true);
+
+      if (firebaseUserDetails) {
+        setUserDetails({
+          displayName: firebaseUserDetails.displayName,
+          email: firebaseUserDetails.email,
+          emailVerified: firebaseUserDetails.emailVerified,
+          uid: firebaseUserDetails.uid,
         });
       } else {
-        setUser(null);
+        setUserDetails(null);
       }
 
-      setLoading(false);
-    });
+      setLoadingUserDetails(false);
+    }
 
-    return () => unsubscribe();
-  }, []);
+    getUserProfileDetails();
+  }, [firebaseUserDetails, loadingFirebaseUserDetails]);
 
   const register = async (email: string, password: string): Promise<UserCredential | undefined> => {
     try {
@@ -85,9 +90,9 @@ export function AuthContextProvider({
     }
   };
 
-  const verify = (user: User) => {
+  const verify = async (user: FirebaseUserDetails) => {
     try {
-      sendEmailVerification(user);
+      await sendEmailVerification(user);
       swal('Verification', 'We have sent a verification link to your email! Please open it to verify your account.', SweetAlertEnum.SUCCESS);
     } catch (e) {
       swal('Verification', 'Failed to send email verification.', SweetAlertEnum.ERROR);
@@ -127,17 +132,27 @@ export function AuthContextProvider({
     }
   };
 
-  return (
-    <AuthContext.Provider value={{
+  function getValues(): UserContextType {
+    return {
+      firebaseUserDetails,
+      loadingFirebaseUserDetails,
+      loadingUserDetails,
       login,
       logout,
       register,
       reset,
+      setUserDetails,
       user,
+      userDetails,
       verify,
-    }}
-    >
-      {loading ? null : children}
-    </AuthContext.Provider>
+    };
+  }
+
+  return (
+    <AuthContextProvider value={getValues()}>
+      {loadingUserDetails ? null : children}
+    </AuthContextProvider>
   );
 }
+
+export { AuthProvider, useAuth };
