@@ -13,7 +13,11 @@ import {
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
+
 import { useState } from 'react';
+
+import SchoolBG from '../../assets/school_bg.png';
+import SchoolLogo from '../../assets/school_logo.png';
 
 import { Button, PageContainer } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
@@ -108,7 +112,7 @@ export default function Home() {
       icon={<IconUserEdit color="#2148C0" />}
       placeholder="Your account type"
       value={form.values.accountType}
-      onChange={(value: string) => form.setFieldValue('accountType', value)}
+      onChange={(value: AccountType) => form.setFieldValue('accountType', value)}
     />
   );
 
@@ -156,10 +160,10 @@ export default function Home() {
   return (
     <PageContainer>
       <Overlay opacity={0.85} zIndex={0}>
-        <Image alt="school background" height="100vh" src="src/assets/school_bg.png" />
+        <Image alt="school background" height="100vh" src={SchoolBG} />
       </Overlay>
       <S.LogoContainer>
-        <img alt="school logo" className="logo" src="src/assets/school_logo.png" />
+        <img alt="school logo" className="logo" src={SchoolLogo} />
       </S.LogoContainer>
       <S.Title>LCCL Book Availability System</S.Title>
       <S.HomeButtonContainer>

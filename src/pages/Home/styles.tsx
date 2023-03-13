@@ -1,15 +1,5 @@
-import { Text, TextInput } from '@mantine/core';
+import { Text } from '@mantine/core';
 import styled from 'styled-components';
-
-export const BackgroundContainer = styled.div`
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  background: url("src/assets/school_bg.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  filter: blur(2px);
-`;
 
 export const LogoContainer = styled.div`
   .logo {
