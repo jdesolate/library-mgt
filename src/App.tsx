@@ -5,8 +5,6 @@ import BookPage from './pages/BookPage';
 import ErrorPage from './pages/Error';
 import Home from './pages/Home';
 
-import './App.css';
-
 function App() {
   return (
     <BrowserRouter>

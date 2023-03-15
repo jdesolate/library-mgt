@@ -2,6 +2,7 @@ import {
   Overlay,
   Image,
   Anchor,
+  Button,
   Group,
   Stack,
   PasswordInput,
@@ -20,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import SchoolBG from '../../assets/school_bg.png';
 import SchoolLogo from '../../assets/school_logo.png';
 
-import { Button, PageContainer } from '../../components';
+import { PageContainer } from '../../components';
 import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
@@ -122,7 +123,7 @@ export default function Home() {
     <ForgotPassword toggleForgotPasswordState={setIsForgotPasswordClicked} />
   ) : (
     <form onSubmit={form.onSubmit(handleAuth)}>
-      <Stack spacing="md">
+      <Stack className="homeButtonContainerStack" spacing="md">
         <TextInput
           required
           color="white"
@@ -150,7 +151,14 @@ export default function Home() {
         />
         {renderAccountTypeField}
         {renderForgotPassword}
-        <Button text={submitButtonText} type="submit" />
+        <Button
+          styles={{
+            root: { backgroundColor: '#2148C0' },
+          }}
+          type="submit"
+        >
+          {submitButtonText.toUpperCase()}
+        </Button>
         <Flex justify="center">
           <Text color="white">{toggleAuthDesc}</Text>
           <S.SignUpButton onClick={toggleAuth}>{toggleAuthText}</S.SignUpButton>
@@ -161,8 +169,8 @@ export default function Home() {
 
   return (
     <PageContainer>
-      <Overlay opacity={0.85} zIndex={0}>
-        <Image alt="school background" height="100vh" src={SchoolBG} />
+      <Overlay opacity={0.85} zIndex={-1}>
+        <Image alt="school background" fit="cover" height="100vh" src={SchoolBG} />
       </Overlay>
       <S.LogoContainer>
         <img alt="school logo" className="logo" src={SchoolLogo} />

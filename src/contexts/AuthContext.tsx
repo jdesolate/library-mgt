@@ -14,15 +14,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import swal from 'sweetalert';
 
 import auth from '../configs/firebaseConfig';
+import SweetAlertEnum from '../enums/SweetAlert.enum';
 import { LibraryUser } from '../types/User.type';
 import createGenericContext from '../utils/Context';
-
-enum SweetAlertEnum {
-  ERROR = 'error',
-  INFO = 'info',
-  SUCCESS = 'success',
-  WARNING = 'warning',
-}
 
 type UserContextType = {
   user: LibraryUser | null,

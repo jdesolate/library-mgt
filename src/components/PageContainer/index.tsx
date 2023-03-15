@@ -12,9 +12,7 @@ function PageContainer(props: Props) {
   const { children } = props;
 
   return (
-    <AppShell
-      fixed
-    >
+    <AppShell>
       <CustomContainer>
         <Stack align="center">
           {children}

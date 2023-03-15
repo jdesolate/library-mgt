@@ -1,10 +1,16 @@
 import React from 'react';
 
+import swal from 'sweetalert';
+
 import { useAuth } from '../../contexts/AuthContext';
+import SweetAlertEnum from '../../enums/SweetAlert.enum';
 
 function BookPage() {
   const auth = useAuth();
-  const handleLogout = () => auth.logout();
+  const handleLogout = () => {
+    auth.logout();
+    swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
+  };
 
   return (
     <div>

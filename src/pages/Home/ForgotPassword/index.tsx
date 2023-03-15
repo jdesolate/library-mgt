@@ -1,10 +1,9 @@
 import {
-  Stack, TextInput, Flex,
+  Button, Stack, TextInput, Flex,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUser } from '@tabler/icons-react';
 
-import { Button } from '../../../components';
 import { useAuth } from '../../../contexts/AuthContext';
 
 import * as S from '../styles';
@@ -51,7 +50,14 @@ function ForgotPassword(props: Props) {
             event.currentTarget.value,
           )}
         />
-        <Button text={submitButtonText} type="submit" />
+        <Button
+          styles={{
+            root: { backgroundColor: '#2148C0' },
+          }}
+          type="submit"
+        >
+          {submitButtonText}
+        </Button>
         <Flex justify="center">
           <S.SignUpButton onClick={() => handleBackHome()}>Back to Home</S.SignUpButton>
         </Flex>

@@ -11,33 +11,18 @@ export const LogoContainer = styled.div`
   .logo:hover {
     filter: drop-shadow(0 0 2em #646cffaa);
   }
-  .logo.react:hover {
+  .logo:hover {
     filter: drop-shadow(0 0 2em #61dafbaa);
   }
 
-  @keyframes logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-      animation: logo-spin infinite 20s linear;
-    }
+  
+  @media screen and (min-width: 460px) {
+    margin-top: 3rem;
   }
 `;
 
 export const Title = styled(Text)`
   z-index: 1;
-  width: 664px;
-  height: 50px;
-  left: 308px;
-  top: 300px;
-
   font-family: 'Outfit';
   font-style: normal;
   font-weight: 800;
@@ -48,11 +33,15 @@ export const Title = styled(Text)`
   color: #FFFFFF;
 
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  @media screen and (max-width: 600px) {
+    font-size: 2rem;
+  }
 `;
 
 export const HomeButtonContainer = styled.div`
   margin-top: 1rem;
-  padding: 2rem 2rem 0.5rem 2rem;
+  padding: 2rem 2rem 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,6 +49,15 @@ export const HomeButtonContainer = styled.div`
   z-index: 1;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 16px;
+
+  
+  @media screen and (min-width: 1200px) {
+    margin-top: 2rem;
+
+    .homeButtonContainerStack {
+      width: 300px;
+    }
+  }
 `;
 
 export const FlexRow = styled.div`
@@ -75,4 +73,9 @@ export const SignUpButton = styled.a`
   margin-left: 5px;
   color: white;
   cursor: pointer;
+  font-weight: 600;
+
+  :hover {
+    color: #2148C0;
+  }
 `;
