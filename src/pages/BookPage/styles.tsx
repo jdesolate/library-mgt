@@ -37,11 +37,51 @@ export const FlexWrap = styled.div`
   }
 `;
 
+export const BookSection = styled.div`
+  margin: 1vh 2vw;
+`;
+
 export const BooksWrapper = styled.div`
-  margin: 2vh 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 20vh;
+  overflow-y: auto;
+
+  
+  @media screen and (min-width: 350px) {
+    height: 25vh;
+  }
+  
+  @media screen and (min-width: 450px) {
+    height: 40vh;
+  }
+
+  @media screen and (min-width: 6000px) {
+    height: 45vh;
+  }
+
+  @media screen and (min-width: 800px) {
+    height: 50vh;
+  }
+`;
+
+export const SearchWrapper = styled.div`
   max-width: 450px;
 
   @media screen and (max-width: 450px) {
     width: 100%;
   }
+`;
+
+export const BookContainer = styled.div`
+  display: flex;
+  border-radius: 5px;
+  height: fit-content;
+  flex-wrap: wrap;
+  padding: 1vh 2vw;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  width: 100%;
 `;
