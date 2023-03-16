@@ -1,11 +1,15 @@
 import {
-  AppShell, Container, Group, Paper, Stack,
+  AppShell,
+  Overlay,
+  Image,
 } from '@mantine/core';
+
+import SchoolBG from '../../assets/school_bg.png';
 
 import CustomContainer from './styles';
 
 type Props = {
-  children: JSX.Element[];
+  children: JSX.Element;
 };
 
 function PageContainer(props: Props) {
@@ -14,9 +18,10 @@ function PageContainer(props: Props) {
   return (
     <AppShell>
       <CustomContainer>
-        <Stack align="center">
-          {children}
-        </Stack>
+        <Overlay opacity={0.85} zIndex={-1}>
+          <Image alt="school background" fit="cover" height="100vh" src={SchoolBG} />
+        </Overlay>
+        {children}
       </CustomContainer>
     </AppShell>
   );

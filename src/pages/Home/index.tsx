@@ -1,6 +1,4 @@
 import {
-  Overlay,
-  Image,
   Anchor,
   Button,
   Group,
@@ -10,6 +8,7 @@ import {
   Text,
   Flex,
   Select,
+  Container,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
@@ -18,10 +17,8 @@ import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import SchoolBG from '../../assets/school_bg.png';
-import SchoolLogo from '../../assets/school_logo.png';
-
 import { PageContainer } from '../../components';
+import SchoolLogo from '../../components/SchoolLogo';
 import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
@@ -169,16 +166,15 @@ export default function Home() {
 
   return (
     <PageContainer>
-      <Overlay opacity={0.85} zIndex={-1}>
-        <Image alt="school background" fit="cover" height="100vh" src={SchoolBG} />
-      </Overlay>
-      <S.LogoContainer>
-        <img alt="school logo" className="logo" src={SchoolLogo} />
-      </S.LogoContainer>
-      <S.Title>LCCL Book Availability System</S.Title>
-      <S.HomeButtonContainer>
-        {renderForm}
-      </S.HomeButtonContainer>
+      <Container mt="2em">
+        <Stack align="center">
+          <SchoolLogo />
+          <S.Title>LCCL Book Availability System</S.Title>
+          <S.HomeButtonContainer>
+            {renderForm}
+          </S.HomeButtonContainer>
+        </Stack>
+      </Container>
     </PageContainer>
   );
 }

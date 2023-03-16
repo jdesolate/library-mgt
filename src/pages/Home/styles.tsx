@@ -1,26 +1,6 @@
 import { Text } from '@mantine/core';
 import styled from 'styled-components';
 
-export const LogoContainer = styled.div`
-  .logo {
-    height: 10em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
-  }
-
-  
-  @media screen and (min-width: 460px) {
-    margin-top: 3rem;
-  }
-`;
-
 export const Title = styled(Text)`
   z-index: 1;
   font-family: 'Outfit';
