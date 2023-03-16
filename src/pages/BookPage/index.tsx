@@ -1,9 +1,9 @@
 import {
-  Button, Flex, Paper, SimpleGrid,
+  Button, Paper, SimpleGrid,
 } from '@mantine/core';
 import swal from 'sweetalert';
 
-import { PageContainer } from '../../components';
+import { PageContainer, SearchInput } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
 
 import { useAuth } from '../../contexts/AuthContext';
@@ -29,6 +29,9 @@ function BookPage() {
             </S.FlexWrap>
             <Button bg="red" variant="gradient" onClick={handleLogout}>Logout</Button>
           </S.FlexWrap>
+          <S.BooksWrapper>
+            <SearchInput radius={5} size="md" />
+          </S.BooksWrapper>
         </SimpleGrid>
       </Paper>
     </PageContainer>

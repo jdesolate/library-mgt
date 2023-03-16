@@ -22,12 +22,26 @@ export const Title = styled(Text)`
 export const FlexWrap = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: start;
   color: white;
   gap: 0.5em;
+  width: 100%;
+
+  button {
+    justify-self: flex-end;
+  }
 
   @media screen and (max-width: 450px) {
     flex-direction: column;
     justify-content: center;
+  }
+`;
+
+export const BooksWrapper = styled.div`
+  margin: 2vh 2vw;
+  max-width: 450px;
+
+  @media screen and (max-width: 450px) {
+    width: 100%;
   }
 `;
