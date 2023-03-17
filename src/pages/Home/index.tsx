@@ -14,7 +14,7 @@ import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { PageContainer } from '../../components';
@@ -35,7 +35,13 @@ enum ButtonType {
 export default function Home() {
   const [type, toggle] = useToggle(['login', 'register']);
   const [isForgotPasswordClicked, setIsForgotPasswordClicked] = useState<boolean>(false);
-  const authContext = useAuth();
+  const {
+    login,
+    logout,
+    register,
+    userDetails,
+    verify,
+  } = useAuth();
   const navigate = useNavigate();
   const isTypeRegister = type === 'register';
   const toggleAuthText = isTypeRegister ? ButtonType.LOGIN : ButtonType.SIGNUP;
@@ -66,16 +72,20 @@ export default function Home() {
   };
 
   async function handleRegister() {
-    const userCredentials = await authContext?.register(form.values.email, form.values.password);
+    const userCredentials = await register(
+      form.values.email,
+      form.values.password,
+      form.values.accountType,
+    );
 
     if (userCredentials?.user) {
-      authContext?.verify(userCredentials.user);
-      authContext?.logout();
+      verify(userCredentials.user);
+      logout();
     }
   }
 
   async function handleLogin() {
-    await authContext?.login(form.values.email, form.values.password);
+    await login(form.values.email, form.values.password);
     navigate(routes.LIBRARY);
   }
 
@@ -87,9 +97,11 @@ export default function Home() {
     }
   }
 
-  if (authContext?.user && isTypeRegister) {
-    toggleAuth();
-  }
+  useEffect(() => {
+    if (userDetails && userDetails.emailVerified) {
+      navigate(routes.LIBRARY);
+    }
+  }, [userDetails]);
 
   const renderForgotPassword = !isTypeRegister && (
     <Group position="right">

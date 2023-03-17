@@ -1,35 +1,51 @@
 import {
-  Button, Paper, SimpleGrid, Text,
+  Button, Flex, Paper, SimpleGrid, Text,
 } from '@mantine/core';
-import { IconFileDescription } from '@tabler/icons-react';
+import { IconEdit, IconFileDescription } from '@tabler/icons-react';
 import swal from 'sweetalert';
 
 import { PageContainer, SearchInput } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
 
 import { useAuth } from '../../contexts/AuthContext';
+import AccountType from '../../enums/AccountType.enum';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
 
 import * as S from './styles';
 
 function BookPage() {
-  const auth = useAuth();
+  const { logout, userDetails } = useAuth();
+  const isUserAdmin = userDetails?.accountType === AccountType.admin;
   const handleLogout = () => {
-    auth.logout();
+    logout();
     swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
   };
+
+  const renderEditBookButton = isUserAdmin && (
+    <Button
+      bg="white"
+      color="blue"
+      leftIcon={<IconEdit color="black" />}
+      variant="subtle"
+    >
+      Edit
+    </Button>
+  );
 
   const renderBook = (
     <S.BookContainer>
       <Text ml="md">Book 1</Text>
-      <Button
-        bg="white"
-        color="blue"
-        leftIcon={<IconFileDescription color="black" />}
-        variant="subtle"
-      >
-        View Details
-      </Button>
+      <Flex>
+        {renderEditBookButton}
+        <Button
+          bg="white"
+          color="blue"
+          leftIcon={<IconFileDescription color="black" />}
+          variant="subtle"
+        >
+          View Details
+        </Button>
+      </Flex>
     </S.BookContainer>
   );
 

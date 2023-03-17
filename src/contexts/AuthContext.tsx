@@ -9,20 +9,24 @@ import {
   User as FirebaseUserDetails,
   UserCredential,
 } from 'firebase/auth';
+import {
+  addDoc, getDocs, query, where,
+} from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import swal from 'sweetalert';
 
-import auth from '../configs/firebaseConfig';
+import { auth } from '../configs/firebaseConfig';
+import { userRef } from '../constants/firebaseRefs';
+import AccountType from '../enums/AccountType.enum';
 import SweetAlertEnum from '../enums/SweetAlert.enum';
 import { LibraryUser } from '../types/User.type';
 import createGenericContext from '../utils/Context';
 
 type UserContextType = {
-  user: LibraryUser | null,
   login: (email: string, password: string) => Promise<UserCredential | undefined>,
   logout: () => void,
-  register: (email: string, password: string) => Promise<UserCredential | undefined>,
+  register: (email: string, password: string, accountType: AccountType) => Promise<UserCredential | undefined>,
   reset: (email: string) => void,
   verify: (user: FirebaseUserDetails) => void,
   firebaseUserDetails?: FirebaseUserDetails | null;
@@ -40,7 +44,6 @@ const [useAuth, AuthContextProvider] = createGenericContext<UserContextType>();
 
 function AuthProvider(props: Props) {
   const { children } = props;
-  const [user, setUser] = useState<LibraryUser | null>(null);
   const [firebaseUserDetails, loadingFirebaseUserDetails] = useAuthState(auth);
   const [userDetails, setUserDetails] = useState<LibraryUser | null>(null);
   const [loadingUserDetails, setLoadingUserDetails] = useState<boolean>(true);
@@ -54,11 +57,17 @@ function AuthProvider(props: Props) {
       setLoadingUserDetails(true);
 
       if (firebaseUserDetails) {
-        setUserDetails({
-          displayName: firebaseUserDetails.displayName,
-          email: firebaseUserDetails.email,
-          emailVerified: firebaseUserDetails.emailVerified,
-          uid: firebaseUserDetails.uid,
+        const q = query(userRef, where('uid', '==', firebaseUserDetails.uid));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const { accountType, email, uid } = doc.data();
+
+          setUserDetails({
+            accountType,
+            email,
+            uid,
+          });
         });
       } else {
         setUserDetails(null);
@@ -70,12 +79,38 @@ function AuthProvider(props: Props) {
     getUserProfileDetails();
   }, [firebaseUserDetails, loadingFirebaseUserDetails]);
 
-  const register = async (email: string, password: string): Promise<UserCredential | undefined> => {
+  async function saveUserToDB(
+    email: string,
+    uid: string,
+    accountType: AccountType,
+  ) {
+    try {
+      const docRef = await addDoc(userRef, {
+        accountType,
+        email,
+        uid,
+      });
+
+      if (docRef) {
+        console.log('Successfully saved to DB');
+      }
+    } catch (e) {
+      console.log('Failed to save to DB');
+    }
+  }
+
+  const register = async (
+    email: string,
+    password: string,
+    accountType: AccountType,
+  ): Promise<UserCredential | undefined> => {
     try {
       const createUserWithEmailResponse = await createUserWithEmailAndPassword(auth, email, password);
 
       if (createUserWithEmailResponse.user) {
         swal('SIGN UP', 'Successfully created an account!', SweetAlertEnum.SUCCESS);
+
+        await saveUserToDB(email, createUserWithEmailResponse.user.uid, accountType);
 
         return createUserWithEmailResponse;
       }
@@ -94,7 +129,6 @@ function AuthProvider(props: Props) {
   };
 
   const logout = async () => {
-    setUser(null);
     await signOut(auth);
   };
 
@@ -136,7 +170,6 @@ function AuthProvider(props: Props) {
       register,
       reset,
       setUserDetails,
-      user,
       userDetails,
       verify,
     };
