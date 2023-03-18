@@ -1,7 +1,8 @@
 import {
-  Button, Flex, Paper, SimpleGrid, Text,
+  Button, Flex, Modal, Paper, SimpleGrid, Text, TextInput,
 } from '@mantine/core';
 import { IconEdit, IconFileDescription } from '@tabler/icons-react';
+import { useState } from 'react';
 import swal from 'sweetalert';
 
 import { PageContainer, SearchInput } from '../../components';
@@ -16,6 +17,12 @@ import * as S from './styles';
 function BookPage() {
   const { logout, userDetails } = useAuth();
   const isUserAdmin = userDetails?.accountType === AccountType.admin;
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   const handleLogout = () => {
     logout();
     swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
@@ -42,6 +49,7 @@ function BookPage() {
           color="blue"
           leftIcon={<IconFileDescription color="black" />}
           variant="subtle"
+          onClick={toggleModal}
         >
           View Details
         </Button>
@@ -49,9 +57,21 @@ function BookPage() {
     </S.BookContainer>
   );
 
+  const renderBookModal = (
+    <Modal
+      centered
+      opened={isModalOpen}
+      title="Book Name"
+      onClose={toggleModal}
+    >
+      <div>HI !</div>
+    </Modal>
+  );
+
   return (
     <PageContainer>
       <Paper bg="transparent" h="95vh" p="xl" w="95vw">
+        {renderBookModal}
         <SimpleGrid cols={1} spacing="md">
           <S.FlexWrap>
             <S.FlexWrap>
