@@ -1,5 +1,5 @@
 import {
-  Button, Flex, Modal, Paper, SimpleGrid, Text, TextInput,
+  Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Text, TextInput,
 } from '@mantine/core';
 import { IconEdit, IconFileDescription } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -61,10 +61,52 @@ function BookPage() {
     <Modal
       centered
       opened={isModalOpen}
-      title="Book Name"
+      title="Book"
       onClose={toggleModal}
     >
-      <div>HI !</div>
+      <Stack spacing="sm">
+        <Image
+          withPlaceholder
+          alt="With custom placeholder"
+          height={200}
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Title"
+          size="md"
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Author"
+          size="md"
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Accession Number"
+          size="md"
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Call Number"
+          size="md"
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Publisher"
+          size="md"
+        />
+        <TextInput
+          required
+          color="white"
+          placeholder="Keywords"
+          size="md"
+        />
+      </Stack>
     </Modal>
   );
 
