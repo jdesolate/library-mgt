@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import {
-  Button, Container, Flex, Image, Modal, Paper, SimpleGrid, Stack, Text, TextInput, Title,
+  Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Switch, Text, TextInput,
 } from '@mantine/core';
 import { IconEdit, IconFileDescription } from '@tabler/icons-react';
 import {
@@ -15,6 +16,7 @@ import { bookRef } from '../../constants/firebaseRefs';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
+import formatDate from '../../utils/Date';
 
 import * as S from './styles';
 
@@ -26,6 +28,7 @@ function BookPage() {
 
   const [books, setBooks] = useState<DocumentData[]>();
   const [currentBook, setCurrentBook] = useState<DocumentData | null>();
+  const isCurrentBookAvailable = currentBook?.status === 'Available';
 
   const toggleModal = (book?: DocumentData) => {
     if (book) {
@@ -46,9 +49,9 @@ function BookPage() {
     async function fetchBooks() {
       setIsLoading(true);
 
-      const q = query(bookRef, where('status', '==', 'available'));
+      const bookQuery = isUserAdmin ? query(bookRef) : query(bookRef, where('status', '==', 'Available'));
 
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(bookQuery);
 
       setBooks(querySnapshot.docs.map((doc) => doc.data()));
 
@@ -91,6 +94,20 @@ function BookPage() {
     </Paper>
   );
 
+  const renderDatePicker = isUserAdmin && (
+    <S.DatePickerContainer>
+      <label htmlFor="datePicker">Return Date</label>
+      <input
+        disabled
+        readOnly
+        className="datePickerInput"
+        name="datePicker"
+        type="date"
+        value={formatDate(currentBook?.returnDate)}
+      />
+    </S.DatePickerContainer>
+  );
+
   const renderBookModal = isModalOpen && (
     <Modal
       centered
@@ -99,6 +116,18 @@ function BookPage() {
       onClose={toggleModal}
     >
       <Stack spacing="sm">
+        <Flex align="center" justify="space-around" wrap="wrap">
+          {renderDatePicker}
+          <Switch
+            checked={isCurrentBookAvailable}
+            label="Status"
+            labelPosition="left"
+            my="md"
+            offLabel="Unavailable"
+            size="lg"
+            onLabel="Available"
+          />
+        </Flex>
         <Image
           withPlaceholder
           alt="With custom placeholder"
@@ -174,7 +203,11 @@ function BookPage() {
             <S.SearchWrapper>
               <SearchInput radius={5} size="md" />
             </S.SearchWrapper>
-            <Text color="white" my="sm" size="1.5rem" weight={600}>List of Books Available</Text>
+            <Text color="white" my="sm" size="1.5rem" weight={600}>
+              List of Books
+              {' '}
+              {isUserAdmin ? null : 'Available'}
+            </Text>
             <S.BooksWrapper>
               {renderBook}
             </S.BooksWrapper>
