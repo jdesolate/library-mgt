@@ -1,12 +1,16 @@
 import {
-  Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Text, TextInput,
+  Button, Container, Flex, Image, Modal, Paper, SimpleGrid, Stack, Text, TextInput, Title,
 } from '@mantine/core';
 import { IconEdit, IconFileDescription } from '@tabler/icons-react';
-import { useState } from 'react';
+import {
+  query, where, getDocs, DocumentData,
+} from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import swal from 'sweetalert';
 
 import { PageContainer, SearchInput } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
+import { bookRef } from '../../constants/firebaseRefs';
 
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
@@ -18,8 +22,18 @@ function BookPage() {
   const { logout, userDetails } = useAuth();
   const isUserAdmin = userDetails?.accountType === AccountType.admin;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const toggleModal = () => {
+  const [books, setBooks] = useState<DocumentData[]>();
+  const [currentBook, setCurrentBook] = useState<DocumentData | null>();
+
+  const toggleModal = (book?: DocumentData) => {
+    if (book) {
+      setCurrentBook(book);
+    } else {
+      setCurrentBook(null);
+    }
+
     setIsModalOpen(!isModalOpen);
   };
 
@@ -27,6 +41,22 @@ function BookPage() {
     logout();
     swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
   };
+
+  useEffect(() => {
+    async function fetchBooks() {
+      setIsLoading(true);
+
+      const q = query(bookRef, where('status', '==', 'available'));
+
+      const querySnapshot = await getDocs(q);
+
+      setBooks(querySnapshot.docs.map((doc) => doc.data()));
+
+      setIsLoading(false);
+    }
+
+    fetchBooks();
+  }, []);
 
   const renderEditBookButton = isUserAdmin && (
     <Button
@@ -39,9 +69,9 @@ function BookPage() {
     </Button>
   );
 
-  const renderBook = (
-    <S.BookContainer>
-      <Text ml="md">Book 1</Text>
+  const renderBook = books ? books.map((book) => (
+    <S.BookContainer key={book.title}>
+      <Text ml="md">{book.title}</Text>
       <Flex>
         {renderEditBookButton}
         <Button
@@ -49,62 +79,80 @@ function BookPage() {
           color="blue"
           leftIcon={<IconFileDescription color="black" />}
           variant="subtle"
-          onClick={toggleModal}
+          onClick={() => toggleModal(book)}
         >
           View Details
         </Button>
       </Flex>
     </S.BookContainer>
+  )) : (
+    <Paper bg="white" p="md" radius={5}>
+      <Text align="center" color="gray" size={22}>There are no books available currently. Please come back at a later time.</Text>
+    </Paper>
   );
 
-  const renderBookModal = (
+  const renderBookModal = isModalOpen && (
     <Modal
       centered
       opened={isModalOpen}
-      title="Book"
+      title=" "
       onClose={toggleModal}
     >
       <Stack spacing="sm">
         <Image
           withPlaceholder
           alt="With custom placeholder"
+          fit="contain"
           height={200}
+          src={currentBook?.imageUrl}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Title"
           placeholder="Title"
           size="md"
+          value={currentBook?.title}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Author"
           placeholder="Author"
           size="md"
+          value={currentBook?.author}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Accession Number"
           placeholder="Accession Number"
           size="md"
+          value={currentBook?.accessionNumber}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Call Number"
           placeholder="Call Number"
           size="md"
+          value={currentBook?.callNumber}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Publisher"
           placeholder="Publisher"
           size="md"
+          value={currentBook?.publisher}
         />
         <TextInput
-          required
+          disabled
           color="white"
+          label="Keywords"
           placeholder="Keywords"
           size="md"
+          value={currentBook?.keywords?.map((keyword: string) => keyword)?.join(', ')}
         />
       </Stack>
     </Modal>
@@ -128,10 +176,6 @@ function BookPage() {
             </S.SearchWrapper>
             <Text color="white" my="sm" size="1.5rem" weight={600}>List of Books Available</Text>
             <S.BooksWrapper>
-              {renderBook}
-              {renderBook}
-              {renderBook}
-              {renderBook}
               {renderBook}
             </S.BooksWrapper>
           </S.BookSection>
