@@ -4,7 +4,7 @@ import {
 } from '@mantine/core';
 import { IconEdit, IconFileDescription } from '@tabler/icons-react';
 import {
-  query, where, getDocs, DocumentData,
+  query, getDocs, DocumentData,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import swal from 'sweetalert';
@@ -49,7 +49,7 @@ function BookPage() {
     async function fetchBooks() {
       setIsLoading(true);
 
-      const bookQuery = isUserAdmin ? query(bookRef) : query(bookRef, where('status', '==', 'Available'));
+      const bookQuery = query(bookRef);
 
       const querySnapshot = await getDocs(bookQuery);
 
@@ -94,7 +94,7 @@ function BookPage() {
     </Paper>
   );
 
-  const renderDatePicker = isUserAdmin && (
+  const renderDatePicker = currentBook?.returnDate && (
     <S.DatePickerContainer>
       <label htmlFor="datePicker">Return Date</label>
       <input
@@ -205,8 +205,6 @@ function BookPage() {
             </S.SearchWrapper>
             <Text color="white" my="sm" size="1.5rem" weight={600}>
               List of Books
-              {' '}
-              {isUserAdmin ? null : 'Available'}
             </Text>
             <S.BooksWrapper>
               {renderBook}
