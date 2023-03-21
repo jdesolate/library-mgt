@@ -2,7 +2,9 @@
 import {
   Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Switch, Text, TextInput,
 } from '@mantine/core';
-import { IconEdit, IconFileDescription } from '@tabler/icons-react';
+import {
+  IconCheck, IconEdit, IconFileDescription, IconX,
+} from '@tabler/icons-react';
 import {
   query, getDocs, DocumentData,
 } from 'firebase/firestore';
@@ -18,26 +20,39 @@ import AccountType from '../../enums/AccountType.enum';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
 import formatDate from '../../utils/Date';
 
+import EditModal from './EditModal';
+
 import * as S from './styles';
 
 function BookPage() {
   const { logout, userDetails } = useAuth();
   const isUserAdmin = userDetails?.accountType === AccountType.admin;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [books, setBooks] = useState<DocumentData[]>();
   const [currentBook, setCurrentBook] = useState<DocumentData | null>();
   const isCurrentBookAvailable = currentBook?.status === 'Available';
 
-  const toggleModal = (book?: DocumentData) => {
+  const onModalOpen = (book?: DocumentData | null, isEdit?: boolean) => {
     if (book) {
       setCurrentBook(book);
     } else {
       setCurrentBook(null);
     }
 
-    setIsModalOpen(!isModalOpen);
+    if (isEdit) {
+      setIsEditModalOpen(!isEditModalOpen);
+    } else {
+      setIsModalOpen(!isModalOpen);
+    }
+  };
+
+  const onCloseModal = () => {
+    setIsEditModalOpen(false);
+    setIsModalOpen(false);
   };
 
   const handleLogout = () => {
@@ -59,30 +74,53 @@ function BookPage() {
     }
 
     fetchBooks();
-  }, []);
+  }, [isStatusUpdated]);
 
-  const renderEditBookButton = isUserAdmin && (
-    <Button
-      bg="white"
-      color="blue"
-      leftIcon={<IconEdit color="black" />}
-      variant="subtle"
-    >
-      Edit
-    </Button>
-  );
+  function getStatusColor(status: string) {
+    return status === 'Available' ? 'green' : 'red';
+  }
+
+  function getStatusIcon(status: string) {
+    return status === 'Available' ? <IconCheck size={12} /> : <IconX size={12} />;
+  }
+
+  function getStatusText(status: string) {
+    return status === 'Available' ? 'Available' : 'Unavailable';
+  }
 
   const renderBook = books ? books.map((book) => (
-    <S.BookContainer key={book.title}>
-      <Text ml="md">{book.title}</Text>
+    <S.BookContainer key={book.accessionNumber}>
+      <Flex align="center" gap="md" my="sm" wrap="wrap">
+        <Text ml="md">{book.title}</Text>
+        <Text color={getStatusColor(book.status)} ml="md">
+          {getStatusIcon(book.status)}
+          {' '}
+          {' '}
+          {getStatusText(book.status)}
+        </Text>
+      </Flex>
       <Flex>
-        {renderEditBookButton}
+        {
+          isUserAdmin && (
+            <Button
+              key={book.accessionNumber}
+              bg="white"
+              color="blue"
+              leftIcon={<IconEdit color="black" />}
+              variant="subtle"
+              onClick={() => onModalOpen(book, true)}
+            >
+              Edit
+            </Button>
+          )
+        }
         <Button
+          key={book.accessionNumber}
           bg="white"
           color="blue"
           leftIcon={<IconFileDescription color="black" />}
           variant="subtle"
-          onClick={() => toggleModal(book)}
+          onClick={() => onModalOpen(book)}
         >
           View Details
         </Button>
@@ -94,11 +132,10 @@ function BookPage() {
     </Paper>
   );
 
-  const renderDatePicker = currentBook?.returnDate && (
+  const renderDatePicker = !isCurrentBookAvailable && (
     <S.DatePickerContainer>
       <label htmlFor="datePicker">Return Date</label>
       <input
-        disabled
         readOnly
         className="datePickerInput"
         name="datePicker"
@@ -110,33 +147,23 @@ function BookPage() {
 
   const renderBookModal = isModalOpen && (
     <Modal
+      key={currentBook?.accessionNumber}
       centered
       opened={isModalOpen}
       title=" "
-      onClose={toggleModal}
+      onClose={onCloseModal}
     >
       <Stack spacing="sm">
-        <Flex align="center" justify="space-around" wrap="wrap">
-          {renderDatePicker}
-          <Switch
-            checked={isCurrentBookAvailable}
-            label="Status"
-            labelPosition="left"
-            my="md"
-            offLabel="Unavailable"
-            size="lg"
-            onLabel="Available"
-          />
-        </Flex>
         <Image
           withPlaceholder
           alt="With custom placeholder"
           fit="contain"
           height={200}
+          my="md"
           src={currentBook?.imageUrl}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Title"
           placeholder="Title"
@@ -144,7 +171,7 @@ function BookPage() {
           value={currentBook?.title}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Author"
           placeholder="Author"
@@ -152,7 +179,7 @@ function BookPage() {
           value={currentBook?.author}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Accession Number"
           placeholder="Accession Number"
@@ -160,7 +187,7 @@ function BookPage() {
           value={currentBook?.accessionNumber}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Call Number"
           placeholder="Call Number"
@@ -168,7 +195,7 @@ function BookPage() {
           value={currentBook?.callNumber}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Publisher"
           placeholder="Publisher"
@@ -176,21 +203,45 @@ function BookPage() {
           value={currentBook?.publisher}
         />
         <TextInput
-          disabled
+          readOnly
           color="white"
           label="Keywords"
           placeholder="Keywords"
           size="md"
           value={currentBook?.keywords?.map((keyword: string) => keyword)?.join(', ')}
         />
+        <Flex align="center" gap="xl" justify="start" wrap="wrap">
+          {renderDatePicker}
+          <S.SwitchWrapper>
+            <Switch
+              checked={isCurrentBookAvailable}
+              label="Status"
+              labelPosition="left"
+              offLabel="Unavailable"
+              size="lg"
+              onLabel="Available"
+            />
+          </S.SwitchWrapper>
+        </Flex>
       </Stack>
     </Modal>
+  );
+
+  const renderEditBookModal = isUserAdmin && (
+    <EditModal
+      book={currentBook}
+      isOpen={isEditModalOpen}
+      isStatusUpdated={isStatusUpdated}
+      onCloseModal={onCloseModal}
+      onStatusUpdate={setIsStatusUpdated}
+    />
   );
 
   return (
     <PageContainer>
       <Paper bg="transparent" h="95vh" p="xl" w="95vw">
         {renderBookModal}
+        {renderEditBookModal}
         <SimpleGrid cols={1} spacing="md">
           <S.FlexWrap>
             <S.FlexWrap>

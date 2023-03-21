@@ -87,7 +87,6 @@ export const BookContainer = styled.div`
 `;
 
 export const DatePickerContainer = styled.div`
-margin: 5px 0;
 display: flex;
 flex-direction: column;
 gap: 2px;
@@ -132,5 +131,10 @@ input {
   padding-right: 12px;
   border-radius: 4px;
 }
+`;
 
+export const SwitchWrapper = styled.div`
+  label {
+    cursor: pointer;
+  }
 `;
