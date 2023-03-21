@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 
 import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
+import LibraryLoader from '../LibraryLoader';
 
 type Props = {
   children: JSX.Element,
@@ -16,7 +17,7 @@ export default function ProtectedRoute(props: Props) {
   } = useAuth();
 
   if (loadingFirebaseUserDetails) {
-    return <div>LOADING Firebase User Details....</div>;
+    return <LibraryLoader />;
   }
 
   if (!firebaseUserDetails) {
@@ -24,7 +25,7 @@ export default function ProtectedRoute(props: Props) {
   }
 
   if (loadingUserDetails) {
-    return <div>LOADING User Details....</div>;
+    return <LibraryLoader />;
   }
 
   return children;

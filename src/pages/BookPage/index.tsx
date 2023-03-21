@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import swal from 'sweetalert';
 
-import { PageContainer, SearchInput } from '../../components';
+import { LibraryLoader, PageContainer, SearchInput } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
 import { bookRef } from '../../constants/firebaseRefs';
 
@@ -103,7 +103,6 @@ function BookPage() {
         {
           isUserAdmin && (
             <Button
-              key={book.accessionNumber}
               bg="white"
               color="blue"
               leftIcon={<IconEdit color="black" />}
@@ -115,7 +114,6 @@ function BookPage() {
           )
         }
         <Button
-          key={book.accessionNumber}
           bg="white"
           color="blue"
           leftIcon={<IconFileDescription color="black" />}
@@ -147,7 +145,6 @@ function BookPage() {
 
   const renderBookModal = isModalOpen && (
     <Modal
-      key={currentBook?.accessionNumber}
       centered
       opened={isModalOpen}
       title=" "
@@ -237,9 +234,12 @@ function BookPage() {
     />
   );
 
+  const renderLoader = isLoading && <LibraryLoader />;
+
   return (
     <PageContainer>
       <Paper bg="transparent" h="95vh" p="xl" w="95vw">
+        {renderLoader}
         {renderBookModal}
         {renderEditBookModal}
         <SimpleGrid cols={1} spacing="md">

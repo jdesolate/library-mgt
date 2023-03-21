@@ -16,6 +16,8 @@ import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import swal from 'sweetalert';
 
+import { LibraryLoader } from '../components';
+
 import { auth } from '../configs/firebaseConfig';
 import { userRef } from '../constants/firebaseRefs';
 import AccountType from '../enums/AccountType.enum';
@@ -49,10 +51,6 @@ function AuthProvider(props: Props) {
   const [loadingUserDetails, setLoadingUserDetails] = useState<boolean>(true);
 
   useEffect(() => {
-    if (loadingFirebaseUserDetails) {
-      return;
-    }
-
     async function getUserProfileDetails() {
       setLoadingUserDetails(true);
 
@@ -177,7 +175,7 @@ function AuthProvider(props: Props) {
 
   return (
     <AuthContextProvider value={getValues()}>
-      {loadingUserDetails ? null : children}
+      {loadingUserDetails ? <LibraryLoader /> : children}
     </AuthContextProvider>
   );
 }

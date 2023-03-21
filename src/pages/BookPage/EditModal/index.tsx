@@ -43,11 +43,6 @@ function EditModal(props: Props) {
     form.setFieldValue('status', !isBookAvailable ? 'Available' : 'Unavailable');
   };
 
-  const toggleCloseModal = () => {
-    form.reset();
-    onCloseModal();
-  };
-
   async function saveChanges() {
     try {
       await updateDoc(doc(db, 'book', book?.accessionNumber), {
@@ -83,7 +78,7 @@ function EditModal(props: Props) {
       centered
       opened={isOpen}
       title=" "
-      onClose={toggleCloseModal}
+      onClose={onCloseModal}
     >
       <Stack spacing="sm">
         <Image

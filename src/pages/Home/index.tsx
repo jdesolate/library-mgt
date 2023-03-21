@@ -98,7 +98,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (userDetails && userDetails.emailVerified) {
+    if (userDetails) {
       navigate(routes.LIBRARY);
     }
   }, [userDetails]);
