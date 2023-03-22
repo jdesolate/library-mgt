@@ -1,17 +1,20 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import {
-  Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Switch, Text, TextInput,
+  ActionIcon,
+  Button, Flex, Image, Modal, Paper, SimpleGrid, Stack, Switch, Text, TextInput, useMantineTheme,
 } from '@mantine/core';
 import {
-  IconCheck, IconEdit, IconFileDescription, IconX,
+  IconCheck, IconEdit, IconFileDescription, IconSearch, IconX,
 } from '@tabler/icons-react';
 import {
   query, getDocs, DocumentData,
 } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import {
+  ChangeEvent, FormEvent, useEffect, useState,
+} from 'react';
 import swal from 'sweetalert';
 
-import { LibraryLoader, PageContainer, SearchInput } from '../../components';
+import { LibraryLoader, PageContainer } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
 import { bookRef } from '../../constants/firebaseRefs';
 
@@ -31,10 +34,12 @@ function BookPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const [books, setBooks] = useState<DocumentData[]>();
+  const [filteredBooks, setFilteredBooks] = useState<DocumentData[]>();
   const [currentBook, setCurrentBook] = useState<DocumentData | null>();
   const isCurrentBookAvailable = currentBook?.status === 'Available';
+  const theme = useMantineTheme();
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const onModalOpen = (book?: DocumentData | null, isEdit?: boolean) => {
     if (book) {
@@ -69,6 +74,7 @@ function BookPage() {
       const querySnapshot = await getDocs(bookQuery);
 
       setBooks(querySnapshot.docs.map((doc) => doc.data()));
+      setFilteredBooks(querySnapshot.docs.map((doc) => doc.data()));
 
       setIsLoading(false);
     }
@@ -88,7 +94,26 @@ function BookPage() {
     return status === 'Available' ? 'Available' : 'Unavailable';
   }
 
-  const renderBook = books ? books.map((book) => (
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
+  const handleSearch = () => {
+    setFilteredBooks(books?.filter(
+      (book) => book.title.toLowerCase().includes(searchInput.toLowerCase()),
+    ));
+  };
+
+  const handleSearchOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value === '') {
+      setFilteredBooks(books);
+      setSearchInput('');
+    } else {
+      setSearchInput(event.currentTarget.value);
+    }
+  };
+
+  const renderBook = filteredBooks && filteredBooks.length > 0 ? filteredBooks.map((book) => (
     <S.BookContainer key={book.accessionNumber}>
       <Flex align="center" gap="md" my="sm" wrap="wrap">
         <Text ml="md">{book.title}</Text>
@@ -126,7 +151,7 @@ function BookPage() {
     </S.BookContainer>
   )) : (
     <Paper bg="white" p="md" radius={5}>
-      <Text align="center" color="gray" size={22}>There are no books available currently. Please come back at a later time.</Text>
+      <Text color="black" size={18}>There are no books available currently. Please come back at a later time.</Text>
     </Paper>
   );
 
@@ -252,7 +277,27 @@ function BookPage() {
           </S.FlexWrap>
           <S.BookSection>
             <S.SearchWrapper>
-              <SearchInput radius={5} size="md" />
+              <form onSubmit={handleFormSubmit}>
+                <TextInput
+                  placeholder="Search for a book here"
+                  radius={5}
+                  rightSection={(
+                    <ActionIcon
+                      color={theme.primaryColor}
+                      radius="xl"
+                      size={32}
+                      type="submit"
+                      variant="filled"
+                      onClick={handleSearch}
+                    >
+                      <IconSearch size="1.1rem" stroke={1.5} />
+                    </ActionIcon>
+                  )}
+                  rightSectionWidth={42}
+                  size="md"
+                  onChange={handleSearchOnChange}
+                />
+              </form>
             </S.SearchWrapper>
             <Text color="white" my="sm" size="1.5rem" weight={600}>
               List of Books

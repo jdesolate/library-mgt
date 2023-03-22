@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { ProtectedRoute } from './components';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import BookPage from './pages/BookPage';
 import ErrorPage from './pages/Error';
 import Home from './pages/Home';
