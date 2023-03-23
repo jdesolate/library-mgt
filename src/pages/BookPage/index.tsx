@@ -1,11 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import {
   ActionIcon,
-  AspectRatio,
   Button,
-  Card,
-  Container,
-  createStyles,
   Flex,
   Image,
   Modal,
@@ -17,12 +13,8 @@ import {
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
-import {
-  IconCheck, IconEdit, IconFileDescription, IconSearch, IconX,
-} from '@tabler/icons-react';
-import {
-  query, getDocs, DocumentData,
-} from 'firebase/firestore';
+import { IconSearch } from '@tabler/icons-react';
+import { query, getDocs, DocumentData } from 'firebase/firestore';
 import {
   ChangeEvent, FormEvent, useEffect, useState,
 } from 'react';
@@ -37,25 +29,11 @@ import AccountType from '../../enums/AccountType.enum';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
 import formatDate from '../../utils/Date';
 
+import BookCard from './BookCard';
+
 import EditModal from './EditModal';
 
 import * as S from './styles';
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    transition: 'transform 150ms ease, box-shadow 150ms ease',
-
-    '&:hover': {
-      transform: 'scale(1.01)',
-      boxShadow: theme.shadows.md,
-    },
-  },
-
-  title: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-    fontWeight: 600,
-  },
-}));
 
 function BookPage() {
   const { logout, userDetails } = useAuth();
@@ -70,7 +48,6 @@ function BookPage() {
   const isCurrentBookAvailable = currentBook?.status === 'Available';
   const theme = useMantineTheme();
   const [searchInput, setSearchInput] = useState<string>('');
-  const { classes } = useStyles();
 
   const onModalOpen = (book?: DocumentData | null, isEdit?: boolean) => {
     if (book) {
@@ -113,18 +90,6 @@ function BookPage() {
     fetchBooks();
   }, [isStatusUpdated]);
 
-  function getStatusColor(status: string) {
-    return status === 'Available' ? 'green' : 'red';
-  }
-
-  function getStatusIcon(status: string) {
-    return status === 'Available' ? <IconCheck size={12} /> : <IconX size={12} />;
-  }
-
-  function getStatusText(status: string) {
-    return status === 'Available' ? 'Available' : 'Unavailable';
-  }
-
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
@@ -144,58 +109,10 @@ function BookPage() {
     }
   };
 
-  /*
-   * <S.BookContainer key={book.accessionNumber}>
-   *     <Flex align="center" gap="md" my="sm" wrap="wrap">
-   *       <Text ml="md">{book.title}</Text>
-   *       <Text color={getStatusColor(book.status)} ml="md">
-   *         {getStatusIcon(book.status)}
-   *         {' '}
-   *         {' '}
-   *         {getStatusText(book.status)}
-   *       </Text>
-   *     </Flex>
-   *     <Flex>
-   *       {
-   *         isUserAdmin && (
-   *           <Button
-   *             bg="white"
-   *             color="blue"
-   *             leftIcon={<IconEdit color="black" />}
-   *             variant="subtle"
-   *             onClick={() => onModalOpen(book, true)}
-   *           >
-   *             Edit
-   *           </Button>
-   *         )
-   *       }
-   *       <Button
-   *         bg="white"
-   *         color="blue"
-   *         leftIcon={<IconFileDescription color="black" />}
-   *         variant="subtle"
-   *         onClick={() => onModalOpen(book)}
-   *       >
-   *         View Details
-   *       </Button>
-   *     </Flex>
-   *   </S.BookContainer>
-   */
-
   const renderBook = filteredBooks && filteredBooks.length > 0 ? filteredBooks.map((book) => (
-    <Card key={book.accessionNumber} className={classes.card} component="a" href="#" p="md" radius="md">
-      <AspectRatio ratio={1920 / 1080}>
-        <Image src={book.imageUrl} />
-      </AspectRatio>
-      <Text color="dimmed" mt="md" size="xs" transform="uppercase" weight={700}>
-        {book.status}
-      </Text>
-      <Text className={classes.title} mt={5}>
-        {book.title}
-      </Text>
-    </Card>
+    <BookCard key={book.accessionNumber} book={book} onOpen={onModalOpen} />
   )) : (
-    <Paper bg="white" p="md" radius={5}>
+    <Paper bg="white" left="15%" p="md" pos="absolute" radius={5} w="70%">
       <Text color="black" size={18}>There are no books available currently. Please come back at a later time.</Text>
     </Paper>
   );
@@ -320,6 +237,7 @@ function BookPage() {
             </S.FlexWrap>
             <Button bg="red" variant="gradient" onClick={handleLogout}>Logout</Button>
           </S.FlexWrap>
+
           <S.BookSection>
             <S.SearchWrapper>
               <form onSubmit={handleFormSubmit}>
@@ -347,14 +265,16 @@ function BookPage() {
             <Text color="white" my="sm" size="1.5rem" weight={600}>
               List of Books
             </Text>
-            <Container py="xl">
-              <SimpleGrid breakpoints={[{ cols: 1, maxWidth: 'sm' }]} cols={3}>
-                {renderBook}
-              </SimpleGrid>
-            </Container>
-            {/* <S.BooksWrapper>
+            <SimpleGrid
+              breakpoints={[
+                { cols: 1, maxWidth: 'sm' },
+                { cols: 2, maxWidth: 'md' },
+                { cols: 3, maxWidth: 'lg' },
+              ]}
+              cols={4}
+            >
               {renderBook}
-            </S.BooksWrapper> */}
+            </SimpleGrid>
           </S.BookSection>
         </SimpleGrid>
       </Paper>
