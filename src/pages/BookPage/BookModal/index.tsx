@@ -89,7 +89,8 @@ function BookModal(props: Props) {
         className="datePickerInput"
         name="datePicker"
         placeholder={formatDate(book.returnDate)}
-        required={!isBookAvailable && !onEditState}
+        readOnly={!onEditState}
+        required={!isBookAvailable && onEditState}
         type="date"
         value={form.values.returnDate}
         onChange={(event) => form.setFieldValue('returnDate', event.currentTarget.value)}
