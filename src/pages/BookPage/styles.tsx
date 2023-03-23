@@ -134,6 +134,8 @@ input {
 `;
 
 export const SwitchWrapper = styled.div`
+  margin-top: 1rem;
+
   label {
     cursor: pointer;
   }
