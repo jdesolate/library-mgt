@@ -9,7 +9,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
-import { query, getDocs, DocumentData } from 'firebase/firestore';
+import { getDocs } from 'firebase/firestore';
 import {
   ChangeEvent, FormEvent, useEffect, useState,
 } from 'react';
@@ -21,6 +21,7 @@ import { bookRef } from '../../constants/firebaseRefs';
 
 import { useAuth } from '../../contexts/AuthContext';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
+import { Book } from '../../types/Book.type';
 
 import BookCard from './BookCard';
 import BookModal from './BookModal';
@@ -32,13 +33,13 @@ function BookPage() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [books, setBooks] = useState<DocumentData[]>();
-  const [filteredBooks, setFilteredBooks] = useState<DocumentData[]>();
-  const [currentBook, setCurrentBook] = useState<DocumentData | null>();
+  const [books, setBooks] = useState<Book[]>();
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>();
+  const [currentBook, setCurrentBook] = useState<Book | null>();
   const theme = useMantineTheme();
   const [searchInput, setSearchInput] = useState<string>('');
 
-  const onModalOpen = (book?: DocumentData | null) => {
+  const onModalOpen = (book?: Book | null) => {
     if (book) {
       setCurrentBook(book);
     } else {
@@ -61,12 +62,10 @@ function BookPage() {
     async function fetchBooks() {
       setIsLoading(true);
 
-      const bookQuery = query(bookRef);
+      const data = await getDocs(bookRef);
 
-      const querySnapshot = await getDocs(bookQuery);
-
-      setBooks(querySnapshot.docs.map((doc) => doc.data()));
-      setFilteredBooks(querySnapshot.docs.map((doc) => doc.data()));
+      setBooks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id }) as Book));
+      setFilteredBooks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id }) as Book));
 
       setIsLoading(false);
     }
@@ -94,7 +93,7 @@ function BookPage() {
   };
 
   const renderBook = filteredBooks && filteredBooks.length > 0 ? filteredBooks.map((book) => (
-    <BookCard key={book.accessionNumber} book={book} onOpen={onModalOpen} />
+    <BookCard key={book.id} book={book} onOpen={onModalOpen} />
   )) : (
     <Paper bg="white" left="15%" p="md" pos="absolute" radius={5} w="70%">
       <Text color="black" size={18}>There are no books available currently. Please come back at a later time.</Text>

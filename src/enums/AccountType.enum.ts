@@ -1,6 +1,6 @@
 enum AccountType {
-  admin = 'Admin',
-  student = 'Student',
+  ADMIN = 'Admin',
+  STUDENT = 'Student',
 }
 
 export default AccountType;

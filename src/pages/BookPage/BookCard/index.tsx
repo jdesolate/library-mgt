@@ -7,7 +7,10 @@ import {
   Button,
 } from '@mantine/core';
 import { IconFileDescription } from '@tabler/icons-react';
-import { DocumentData } from 'firebase/firestore';
+
+import BookStatus from '../../../enums/BookStatus.enum';
+
+import { Book } from '../../../types/Book.type';
 
 const useStyles = createStyles((theme) => ({
   bottomSection: {
@@ -43,8 +46,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 type Props = {
-  book: DocumentData;
-  onOpen: (book?: DocumentData | null, isEdit?: boolean) => void;
+  book: Book;
+  onOpen: (book?: Book | null, isEdit?: boolean) => void;
 };
 
 function BookCard(props: Props) {
@@ -58,7 +61,7 @@ function BookCard(props: Props) {
       </Card.Section>
       <Card.Section className={classes.bottomSection}>
         <div className={classes.details}>
-          <Badge color={book.status === 'Available' ? 'green' : 'red'}>{book.status}</Badge>
+          <Badge color={book.status === BookStatus.AVAILABLE ? 'green' : 'red'}>{book.status}</Badge>
 
           <Text className={classes.title} fw={700} mt="xs">
             {book.title}

@@ -14,6 +14,7 @@ import swal from 'sweetalert';
 import { db } from '../../../configs/firebaseConfig';
 import { useAuth } from '../../../contexts/AuthContext';
 import AccountType from '../../../enums/AccountType.enum';
+import BookStatus from '../../../enums/BookStatus.enum';
 import SweetAlertEnum from '../../../enums/SweetAlert.enum';
 
 import formatDate from '../../../utils/Date';
@@ -31,15 +32,16 @@ function BookModal(props: Props) {
   const {
     book, isOpen, isStatusUpdated, onCloseModal, onStatusUpdate,
   } = props;
-  const [isBookAvailable, setIsBookAvailable] = useState<boolean>(book.status === 'Available');
+  const [isBookAvailable, setIsBookAvailable] = useState<boolean>(book.status === BookStatus.AVAILABLE);
   const [onEditState, setOnEditState] = useState<boolean>(false);
   const { userDetails } = useAuth();
-  const isUserAdmin = userDetails?.accountType === AccountType.admin;
+  const isUserAdmin = userDetails?.accountType === AccountType.ADMIN;
 
   const form = useForm({
     initialValues: {
       accessionNumber: book.accessionNumber,
       author: book.author,
+      bookType: book.bookType,
       callNumber: book.callNumber,
       keywords: book.keywords,
       publisher: book.publisher,
@@ -62,16 +64,26 @@ function BookModal(props: Props) {
     if (onEditState) {
       setIsBookAvailable(!isBookAvailable);
 
-      form.setFieldValue('status', !isBookAvailable ? 'Available' : 'Unavailable');
+      form.setFieldValue('status', !isBookAvailable ? BookStatus.AVAILABLE : BookStatus.UNAVAILABLE);
     }
   };
 
   async function saveChanges() {
     try {
-      await updateDoc(doc(db, 'book', book.accessionNumber), {
+      const newBookDetails = {
+        accessionNumber: form.values.accessionNumber,
+        author: form.values.author,
+        bookType: form.values.bookType,
+        callNumber: form.values.callNumber,
+        keywords: form.values.keywords,
+        publisher: form.values.publisher,
         returnDate: form.values.returnDate,
         status: form.values.status,
-      });
+        title: form.values.title,
+      };
+
+      await updateDoc(doc(db, 'book', book.id), newBookDetails);
+
       onStatusUpdate(!isStatusUpdated);
 
       swal('Update', 'Successfully saved changes.', SweetAlertEnum.SUCCESS);
