@@ -50,7 +50,7 @@ export default function Home() {
 
   const form = useForm({
     initialValues: {
-      accountType: AccountType.student,
+      accountType: AccountType.STUDENT,
       email: '',
       password: '',
     },
@@ -118,7 +118,7 @@ export default function Home() {
 
   const renderAccountTypeField = isTypeRegister && (
     <Select
-      data={[AccountType.student, AccountType.admin]}
+      data={[AccountType.STUDENT, AccountType.ADMIN]}
       error={form.errors.accountType
         && 'Please indicate the account type'}
       icon={<IconUserEdit color="#2148C0" />}

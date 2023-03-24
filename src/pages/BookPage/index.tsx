@@ -154,11 +154,12 @@ function BookPage() {
             </Text>
             <SimpleGrid
               breakpoints={[
-                { cols: 1, maxWidth: 'sm' },
-                { cols: 2, maxWidth: 'md' },
-                { cols: 3, maxWidth: 'lg' },
+                { cols: 1, maxWidth: 'xs' },
+                { cols: 2, maxWidth: 'sm' },
+                { cols: 3, maxWidth: 'md' },
+                { cols: 4, maxWidth: 'lg' },
               ]}
-              cols={4}
+              cols={5}
             >
               {renderBook}
             </SimpleGrid>

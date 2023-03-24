@@ -56,18 +56,6 @@ function BookModal(props: Props) {
     onCloseModal();
   };
 
-  const toggleEditState = () => {
-    setOnEditState(!onEditState);
-  };
-
-  const toggleStatus = () => {
-    if (onEditState) {
-      setIsBookAvailable(!isBookAvailable);
-
-      form.setFieldValue('status', !isBookAvailable ? BookStatus.AVAILABLE : BookStatus.UNAVAILABLE);
-    }
-  };
-
   async function saveChanges() {
     try {
       const newBookDetails = {
@@ -94,17 +82,43 @@ function BookModal(props: Props) {
     }
   }
 
+  async function handleConfirm() {
+    const isConfirmed = await swal('Are you sure?', {
+      buttons: {
+        cancel: true,
+        confirm: true,
+      },
+    });
+
+    if (isConfirmed) {
+      saveChanges();
+    }
+  }
+
+  const toggleEditState = () => {
+    setOnEditState(!onEditState);
+  };
+
+  const toggleStatus = () => {
+    if (onEditState) {
+      setIsBookAvailable(!isBookAvailable);
+
+      const bookStatus = !isBookAvailable ? BookStatus.AVAILABLE : BookStatus.UNAVAILABLE;
+
+      form.setFieldValue('status', bookStatus);
+    }
+  };
+
   const renderDatePicker = !isBookAvailable && (
     <S.DatePickerContainer>
       <label htmlFor="datePicker">Return Date</label>
       <input
         className="datePickerInput"
         name="datePicker"
-        placeholder={formatDate(book.returnDate)}
         readOnly={!onEditState}
         required={!isBookAvailable && onEditState}
         type="date"
-        value={form.values.returnDate}
+        value={formatDate(form.values.returnDate)}
         onChange={(event) => form.setFieldValue('returnDate', event.currentTarget.value)}
       />
     </S.DatePickerContainer>
@@ -132,7 +146,7 @@ function BookModal(props: Props) {
       title=" "
       onClose={handleOnCloseModal}
     >
-      <form onSubmit={form.onSubmit(saveChanges)}>
+      <form onSubmit={form.onSubmit(handleConfirm)}>
         <Stack spacing="sm">
           {renderEditButton}
           <Image
@@ -152,6 +166,16 @@ function BookModal(props: Props) {
             size="md"
             value={form.values.title}
             onChange={(event) => form.setFieldValue('title', event.currentTarget.value)}
+          />
+          <TextInput
+            color="white"
+            label="Book Type"
+            placeholder="Book Type"
+            readOnly={!onEditState}
+            required={onEditState}
+            size="md"
+            value={form.values.bookType}
+            onChange={(event) => form.setFieldValue('bookType', event.currentTarget.value)}
           />
           <TextInput
             color="white"
@@ -228,6 +252,7 @@ function BookModal(props: Props) {
                 root: { backgroundColor: '#2148C0' },
               }}
               type="submit"
+              onClick={() => handleConfirm()}
             >
               Save Changes
             </Button>
@@ -239,102 +264,3 @@ function BookModal(props: Props) {
 }
 
 export default BookModal;
-
-/*
- *
- *const renderDatePicker = !isCurrentBookAvailable && (
- *  <S.DatePickerContainer>
- *    <label htmlFor="datePicker">Return Date</label>
- *    <input
- *      readOnly
- *      className="datePickerInput"
- *      name="datePicker"
- *      type="date"
- *      value={formatDate(currentBook?.returnDate)}
- *    />
- *  </S.DatePickerContainer>
- *);
- */
-
-/*
- *isModalOpen && (
- *    <Modal
- *      centered
- *      opened={isModalOpen}
- *      title=" "
- *      onClose={onCloseModal}
- *    >
- *      <Stack spacing="sm">
- *        <Image
- *          withPlaceholder
- *          alt="With custom placeholder"
- *          fit="contain"
- *          height={200}
- *          my="md"
- *          src={currentBook?.imageUrl}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Title"
- *          placeholder="Title"
- *          size="md"
- *          value={currentBook?.title}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Author"
- *          placeholder="Author"
- *          size="md"
- *          value={currentBook?.author}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Accession Number"
- *          placeholder="Accession Number"
- *          size="md"
- *          value={currentBook?.accessionNumber}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Call Number"
- *          placeholder="Call Number"
- *          size="md"
- *          value={currentBook?.callNumber}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Publisher"
- *          placeholder="Publisher"
- *          size="md"
- *          value={currentBook?.publisher}
- *        />
- *        <TextInput
- *          readOnly
- *          color="white"
- *          label="Keywords"
- *          placeholder="Keywords"
- *          size="md"
- *          value={currentBook?.keywords?.map((keyword: string) => keyword)?.join(', ')}
- *        />
- *        <Flex align="center" gap="xl" justify="start" wrap="wrap">
- *          {renderDatePicker}
- *          <S.SwitchWrapper>
- *            <Switch
- *              checked={isCurrentBookAvailable}
- *              label="Status"
- *              labelPosition="left"
- *              offLabel="Unavailable"
- *              size="lg"
- *              onLabel="Available"
- *            />
- *          </S.SwitchWrapper>
- *        </Flex>
- *      </Stack>
- *    </Modal>
- *  );
- */

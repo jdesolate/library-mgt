@@ -5,6 +5,7 @@ import {
   Text,
   Badge,
   Button,
+  Flex,
 } from '@mantine/core';
 import { IconFileDescription } from '@tabler/icons-react';
 
@@ -27,7 +28,7 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'start',
     display: 'flex',
     flexDirection: 'column',
-    height: '6rem',
+    height: '15vh',
     justifyContent: 'start',
   },
 
@@ -61,13 +62,14 @@ function BookCard(props: Props) {
       </Card.Section>
       <Card.Section className={classes.bottomSection}>
         <div className={classes.details}>
-          <Badge color={book.status === BookStatus.AVAILABLE ? 'green' : 'red'}>{book.status}</Badge>
-
+          <Flex gap="sm" wrap="wrap">
+            <Badge>{book.bookType}</Badge>
+            <Badge color={book.status === BookStatus.AVAILABLE ? 'green' : 'red'}>{book.status}</Badge>
+          </Flex>
           <Text className={classes.title} fw={700} mt="xs">
             {book.title}
           </Text>
         </div>
-
         <Button
           color="blue"
           leftIcon={<IconFileDescription color="black" />}

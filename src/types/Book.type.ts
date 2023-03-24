@@ -5,9 +5,9 @@ export type Book = {
   callNumber: string;
   id?: string;
   imageUrl: string;
-  keyword: string;
+  keywords: string;
   publisher: string;
-  returnDate: Date | string;
+  returnDate: string;
   status: string;
   title: string;
 };
