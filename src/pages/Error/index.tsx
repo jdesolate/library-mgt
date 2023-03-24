@@ -57,11 +57,10 @@ export default function ErrorPage() {
   return (
     <div className={classes.root}>
       <Container>
-        <div className={classes.label}>500</div>
+        <div className={classes.label}>404</div>
         <Title className={classes.title}>Something bad just happened...</Title>
         <Text align="center" className={classes.description} size="lg">
-          Our servers could not handle your request. Don&apos;t worry, our development team was
-          already notified. Try refreshing the page.
+          The page you are looking for may have been moved, deleted, or possibly never existed.
         </Text>
         <Group position="center">
           <Button size="md" variant="white" onClick={handleRefresh}>
