@@ -18,9 +18,10 @@ import swal from 'sweetalert';
 import { LibraryLoader, PageContainer } from '../../components';
 import SchoolLogo from '../../components/SchoolLogo';
 import { bookRef } from '../../constants/firebaseRefs';
-
 import { useAuth } from '../../contexts/AuthContext';
+import AccountType from '../../enums/AccountType.enum';
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
+
 import { Book } from '../../types/Book.type';
 
 import BookCard from './BookCard';
@@ -29,7 +30,7 @@ import BookModal from './BookModal';
 import * as S from './styles';
 
 function BookPage() {
-  const { logout } = useAuth();
+  const { userDetails, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,6 +39,7 @@ function BookPage() {
   const [currentBook, setCurrentBook] = useState<Book | null>();
   const theme = useMantineTheme();
   const [searchInput, setSearchInput] = useState<string>('');
+  const isUserAdmin = userDetails?.accountType === AccountType.ADMIN;
 
   const onModalOpen = (book?: Book | null) => {
     if (book) {
@@ -52,12 +54,10 @@ function BookPage() {
   const onCloseModal = () => {
     setIsModalOpen(false);
   };
-
   const handleLogout = () => {
     logout();
     swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
   };
-
   useEffect(() => {
     async function fetchBooks() {
       setIsLoading(true);
@@ -109,11 +109,12 @@ function BookPage() {
       onStatusUpdate={setIsStatusUpdated}
     />
   );
+
   const renderLoader = isLoading && <LibraryLoader />;
 
   return (
-    <PageContainer>
-      <Paper bg="transparent" h="95vh" p="xl" w="95vw">
+    <PageContainer shouldShowNavbar={isUserAdmin}>
+      <Paper bg="transparent" h="95vh" p="xl">
         {renderLoader}
         {renderBookModal}
         <SimpleGrid cols={1} spacing="md">
@@ -122,7 +123,7 @@ function BookPage() {
               <SchoolLogo />
               <S.Title>LCCL Book Availability System</S.Title>
             </S.FlexWrap>
-            <Button bg="red" variant="gradient" onClick={handleLogout}>Logout</Button>
+            {!isUserAdmin && <Button bg="red" variant="gradient" onClick={handleLogout}>Logout</Button>}
           </S.FlexWrap>
 
           <S.BookSection>

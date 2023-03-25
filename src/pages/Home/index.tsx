@@ -177,7 +177,7 @@ export default function Home() {
   );
 
   return (
-    <PageContainer>
+    <PageContainer shouldShowNavbar={false}>
       <Container mt="2em">
         <Stack align="center">
           <SchoolLogo />
