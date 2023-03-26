@@ -1,5 +1,5 @@
 import {
-  Navbar, Tooltip, UnstyledButton, createStyles, Stack, rem,
+  Navbar, Tooltip, UnstyledButton, createStyles, Stack, rem, Center,
 } from '@mantine/core';
 import {
   IconDeviceDesktopAnalytics,
@@ -7,12 +7,16 @@ import {
   IconLogout,
 } from '@tabler/icons-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import swal from 'sweetalert';
+
+import routes from '../../constants/routes';
 
 import { useAuth } from '../../contexts/AuthContext';
 
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
+import SchoolLogo from '../SchoolLogo';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -60,21 +64,33 @@ function NavbarLink({
 
 function LibraryNavbar() {
   const { logout } = useAuth();
-  const [active, setActive] = useState(2);
+  const [active, setActive] = useState(0);
+  const navigate = useNavigate();
+  const navRoute = [routes.BOOKS, routes.REQUESTS];
 
   const navLinks = [
     { icon: IconDeviceDesktopAnalytics, label: 'Dashboard' },
     { icon: IconUser, label: 'Book Requests' },
   ];
 
-  const links = navLinks.map((link, index) => (
-    <NavbarLink
-      {...link}
-      key={link.label}
-      active={index === active}
-      onClick={() => setActive(index)}
-    />
-  ));
+  const handleNavigate = (index: number) => {
+    navigate(navRoute[index]);
+    setActive(index);
+  };
+
+  const links = navLinks.map((link, index) => {
+    const { icon, label } = link;
+
+    return (
+      <NavbarLink
+        key={label}
+        active={index === active}
+        icon={icon}
+        label={label}
+        onClick={() => handleNavigate(index)}
+      />
+    );
+  });
 
   const handleLogout = () => {
     logout();
@@ -82,7 +98,7 @@ function LibraryNavbar() {
   };
 
   return (
-    <Navbar height={750} p="md" width={{ base: 80 }}>
+    <Navbar p="md" width={{ base: 80 }}>
       <Navbar.Section grow mt={50}>
         <Stack justify="center" spacing={0}>
           {links}

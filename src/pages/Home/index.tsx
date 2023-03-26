@@ -86,7 +86,7 @@ export default function Home() {
 
   async function handleLogin() {
     await login(form.values.email, form.values.password);
-    navigate(routes.LIBRARY);
+    navigate(routes.BOOKS);
   }
 
   function handleAuth() {
@@ -99,7 +99,7 @@ export default function Home() {
 
   useEffect(() => {
     if (userDetails) {
-      navigate(routes.LIBRARY);
+      navigate(routes.BOOKS);
     }
   }, [userDetails]);
 

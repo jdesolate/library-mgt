@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import BookPage from './pages/BookPage';
 import ErrorPage from './pages/Error';
 import Home from './pages/Home';
+import RequestPage from './pages/RequestPage';
 
 function App() {
   return (
@@ -18,6 +19,14 @@ function App() {
             </ProtectedRoute>
           )}
           path="/books"
+        />
+        <Route
+          element={(
+            <ProtectedRoute>
+              <RequestPage />
+            </ProtectedRoute>
+          )}
+          path="/requests"
         />
         <Route element={<ErrorPage />} path="/*" />
       </Routes>
