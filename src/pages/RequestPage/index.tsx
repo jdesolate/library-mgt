@@ -1,15 +1,20 @@
 import {
-  Button, Paper, Table, Flex,
+  Button, Paper, Table, Flex, Text,
 } from '@mantine/core';
-import { getDocs, query, where } from 'firebase/firestore';
+import {
+  doc, getDocs, query, updateDoc, where,
+} from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 import swal from 'sweetalert';
 
 import { LibraryLoader, PageContainer } from '../../components';
+import { db } from '../../configs/firebaseConfig';
 import { requestRef } from '../../constants/firebaseRefs';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
+import BookStatus from '../../enums/BookStatus.enum';
 import RequestStatus from '../../enums/RequestStatus.enum';
+import SweetAlertEnum from '../../enums/SweetAlert.enum';
 import { BookRequest } from '../../types/Book.type';
 
 enum ConfirmButtonEnum {
@@ -17,10 +22,17 @@ enum ConfirmButtonEnum {
   REJECT = 'Reject',
 }
 
+type ChangeRequest = {
+  bookId: string;
+  requestId: string;
+  returnDate: string;
+};
+
 function RequestPage() {
   const { userDetails } = useAuth();
   const isUserAdmin = userDetails?.accountType === AccountType.ADMIN;
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [bookRequests, setBookRequests] = useState<BookRequest[]>();
 
   useEffect(() => {
@@ -37,17 +49,51 @@ function RequestPage() {
     }
 
     fetchRequests();
-  }, []);
+  }, [isStatusUpdated]);
 
-  const handleApprove = () => {
-    // approve
-  };
+  async function changeBookDetails(request: ChangeRequest) {
+    const newBookDetails = {
+      returnDate: request.returnDate,
+      status: BookStatus.UNAVAILABLE,
+    };
 
-  const handleReject = () => {
-    // reject
-  };
+    await updateDoc(doc(db, 'book', request.bookId), newBookDetails);
 
-  async function handleConfirm(confirm: string) {
+    setIsStatusUpdated(!isStatusUpdated);
+  }
+
+  async function handleApprove(request: ChangeRequest) {
+    try {
+      const newRequestDetails = {
+        status: RequestStatus.GRANTED,
+      };
+
+      await updateDoc(doc(db, 'request', request.requestId), newRequestDetails);
+      await changeBookDetails(request);
+
+      swal('Update', 'Successfully approved request', SweetAlertEnum.SUCCESS);
+    } catch (e) {
+      swal('Update', 'Failed to approve request', SweetAlertEnum.ERROR);
+    }
+  }
+
+  async function handleReject(request: ChangeRequest) {
+    try {
+      const newRequestDetails = {
+        status: RequestStatus.REJECTED,
+      };
+
+      await updateDoc(doc(db, 'request', request.requestId), newRequestDetails);
+
+      setIsStatusUpdated(!isStatusUpdated);
+
+      swal('Update', 'Successfully rejected request', SweetAlertEnum.SUCCESS);
+    } catch (e) {
+      swal('Update', 'Failed to reject request', SweetAlertEnum.ERROR);
+    }
+  }
+
+  async function handleConfirm(confirm: string, request: ChangeRequest) {
     await swal(`Would you like to ${confirm.toLowerCase()} this request?`, {
       buttons: {
         cancel: true,
@@ -56,31 +102,43 @@ function RequestPage() {
     });
 
     if (confirm === ConfirmButtonEnum.APPROVE) {
-      handleApprove();
+      handleApprove(request);
     } else {
-      handleReject();
+      handleReject(request);
     }
   }
 
   const renderLoader = isLoading && <LibraryLoader />;
 
-  const rows = bookRequests?.map((row) => (
-    <tr key={row.id}>
-      <td>{row.bookTitle}</td>
-      <td>{row.returnDate}</td>
-      <td>{row.email}</td>
-      <td>
-        <Flex align="center" justify="center">
-          <Button color="green" mr="sm" onClick={() => handleConfirm(ConfirmButtonEnum.APPROVE)}>
-            {ConfirmButtonEnum.APPROVE}
-          </Button>
-          <Button color="red" onClick={() => handleConfirm(ConfirmButtonEnum.REJECT)}>
-            {ConfirmButtonEnum.REJECT}
-          </Button>
-        </Flex>
-      </td>
+  const rows = bookRequests && bookRequests.length > 0 ? bookRequests.map((row) => {
+    const requestedBook = {
+      bookId: row.bookId,
+      requestId: row.id,
+      returnDate: row.returnDate,
+    };
+
+    return (
+      <tr key={row.id}>
+        <td>{row.bookTitle}</td>
+        <td>{row.returnDate}</td>
+        <td>{row.email}</td>
+        <td>
+          <Flex align="center" justify="center">
+            <Button color="green" mr="sm" onClick={() => handleConfirm(ConfirmButtonEnum.APPROVE, requestedBook)}>
+              {ConfirmButtonEnum.APPROVE}
+            </Button>
+            <Button color="red" onClick={() => handleConfirm(ConfirmButtonEnum.REJECT, requestedBook)}>
+              {ConfirmButtonEnum.REJECT}
+            </Button>
+          </Flex>
+        </td>
+      </tr>
+    );
+  }) : (
+    <tr>
+      <Text color="gray" m="md" size="lg">There are no pending request/s at the moment. Please check again at a later time.</Text>
     </tr>
-  ));
+  );
 
   return (
     <PageContainer shouldShowNavbar={isUserAdmin}>

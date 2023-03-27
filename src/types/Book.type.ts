@@ -15,7 +15,7 @@ export type Book = {
 };
 
 export type BookRequest = {
-  id?: string;
+  id: string;
   email: string;
   bookId: string;
   bookTitle: string;
