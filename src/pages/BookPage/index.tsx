@@ -54,10 +54,12 @@ function BookPage() {
   const onCloseModal = () => {
     setIsModalOpen(false);
   };
+
   const handleLogout = () => {
     logout();
     swal('LOGOUT', 'You have logged out.', SweetAlertEnum.SUCCESS);
   };
+
   useEffect(() => {
     async function fetchBooks() {
       setIsLoading(true);

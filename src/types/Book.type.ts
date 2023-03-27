@@ -1,3 +1,5 @@
+import RequestStatus from '../enums/RequestStatus.enum';
+
 export type Book = {
   accessionNumber: string;
   author: string;
@@ -10,4 +12,13 @@ export type Book = {
   returnDate: string;
   status: string;
   title: string;
+};
+
+export type BookRequest = {
+  id?: string;
+  email: string;
+  bookId: string;
+  bookTitle: string;
+  status: RequestStatus;
+  returnDate: string;
 };
