@@ -81,7 +81,7 @@ function BookPage() {
 
   const handleSearch = () => {
     setFilteredBooks(books?.filter(
-      (book) => book.title.toLowerCase().includes(searchInput.toLowerCase()),
+      (book) => book.bookType.toLowerCase().includes(searchInput.toLowerCase()),
     ));
   };
 
