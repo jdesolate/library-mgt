@@ -5,7 +5,6 @@ import {
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
 import {
-  addDoc,
   doc, DocumentData, updateDoc,
 } from 'firebase/firestore';
 import { useState } from 'react';
@@ -13,12 +12,10 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 
 import { db } from '../../../configs/firebaseConfig';
-import { requestRef } from '../../../constants/firebaseRefs';
 import { useAuth } from '../../../contexts/AuthContext';
 import AccountType from '../../../enums/AccountType.enum';
 import BookStatus from '../../../enums/BookStatus.enum';
 import SweetAlertEnum from '../../../enums/SweetAlert.enum';
-import { BookRequest } from '../../../types/Book.type';
 
 import formatDate from '../../../utils/Date';
 import BookRequestForm from '../BookRequestForm';
@@ -165,6 +162,7 @@ function BookModal(props: Props) {
       isBookAvailable={isBookAvailable}
       isUserStudent={!isUserAdmin}
       userEmail={userDetails?.email ?? ''}
+      onClose={handleOnCloseModal}
     />
   );
 

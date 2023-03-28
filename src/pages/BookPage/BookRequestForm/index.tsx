@@ -22,12 +22,13 @@ type Props = {
   isUserStudent: boolean;
   isBookAvailable: boolean;
   bookDetails: BookDetail;
+  onClose: () => void;
   userEmail: string;
 };
 
 function BookRequestForm(props: Props) {
   const {
-    isUserStudent, isBookAvailable, bookDetails, userEmail,
+    isUserStudent, isBookAvailable, bookDetails, onClose, userEmail,
   } = props;
   const [onEditRequest, setOnEditRequest] = useState<boolean>(false);
 
@@ -35,10 +36,20 @@ function BookRequestForm(props: Props) {
     initialValues: {
       returnDate: '',
     },
+
+    validate: {
+      returnDate: (val) => (val.length <= 1 ? 'Please indicate the account type' : null),
+    },
   });
 
   async function saveRequest() {
     try {
+      if (form.values.returnDate === '') {
+        swal('Request', 'Please indicate the return date.', SweetAlertEnum.ERROR);
+
+        return;
+      }
+
       const newRequestDetails = {
         bookId: bookDetails.bookId,
         bookTitle: bookDetails.bookTitle,
@@ -66,7 +77,8 @@ function BookRequestForm(props: Props) {
     });
 
     if (isConfirmed) {
-      saveRequest();
+      await saveRequest();
+      onClose();
     }
   };
 
