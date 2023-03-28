@@ -5,20 +5,21 @@ import {
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
 import {
-  doc, DocumentData, updateDoc,
+  addDoc, doc, DocumentData, updateDoc,
 } from 'firebase/firestore';
 import { useState } from 'react';
 
 import swal from 'sweetalert';
 
 import { db } from '../../../configs/firebaseConfig';
+import { requestRef } from '../../../constants/firebaseRefs';
 import { useAuth } from '../../../contexts/AuthContext';
 import AccountType from '../../../enums/AccountType.enum';
 import BookStatus from '../../../enums/BookStatus.enum';
+import RequestStatus from '../../../enums/RequestStatus.enum';
 import SweetAlertEnum from '../../../enums/SweetAlert.enum';
 
 import formatDate from '../../../utils/Date';
-import BookRequestForm from '../BookRequestForm';
 import * as S from '../styles';
 
 type Props = {
@@ -153,17 +154,50 @@ function BookModal(props: Props) {
     </Button>
   );
 
-  const renderBookRequestForm = (
-    <BookRequestForm
-      bookDetails={{
+  async function saveRequest() {
+    try {
+      const newRequestDetails = {
         bookId: form.values.accessionNumber,
         bookTitle: form.values.title,
+        email: userDetails?.email ?? '',
+        status: RequestStatus.PENDING,
+      };
+
+      const docRef = await addDoc(requestRef, newRequestDetails);
+
+      if (docRef) {
+        swal('Request', 'Successfully sent request. Please wait for the admin to confirm your request.', SweetAlertEnum.SUCCESS);
+        handleOnCloseModal();
+      }
+    } catch (e) {
+      swal('Request', 'Failed to send request.', SweetAlertEnum.ERROR);
+    }
+  }
+
+  const handleConfirmRequest = async () => {
+    const isConfirmed = await swal('Are you sure?', {
+      buttons: {
+        cancel: true,
+        confirm: true,
+      },
+    });
+
+    if (isConfirmed) {
+      await saveRequest();
+    }
+  };
+
+  const renderRequestBookButton = !isUserAdmin && isBookAvailable && (
+    <Button
+      fullWidth
+      mt="lg"
+      styles={{
+        root: { backgroundColor: '#2148C0' },
       }}
-      isBookAvailable={isBookAvailable}
-      isUserStudent={!isUserAdmin}
-      userEmail={userDetails?.email ?? ''}
-      onClose={handleOnCloseModal}
-    />
+      onClick={handleConfirmRequest}
+    >
+      Request Book
+    </Button>
   );
 
   return (
@@ -273,7 +307,7 @@ function BookModal(props: Props) {
             </Flex>
           </Stack>
           {renderSaveChangesButton}
-          {renderBookRequestForm}
+          {renderRequestBookButton}
         </Stack>
       </form>
     </Modal>

@@ -20,5 +20,4 @@ export type BookRequest = {
   bookId: string;
   bookTitle: string;
   status: RequestStatus;
-  returnDate: string;
 };

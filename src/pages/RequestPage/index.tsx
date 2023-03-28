@@ -25,7 +25,6 @@ enum ConfirmButtonEnum {
 type ChangeRequest = {
   bookId: string;
   requestId: string;
-  returnDate: string;
 };
 
 function RequestPage() {
@@ -53,7 +52,6 @@ function RequestPage() {
 
   async function changeBookDetails(request: ChangeRequest) {
     const newBookDetails = {
-      returnDate: request.returnDate,
       status: BookStatus.UNAVAILABLE,
     };
 
@@ -114,13 +112,11 @@ function RequestPage() {
     const requestedBook = {
       bookId: row.bookId,
       requestId: row.id ?? '',
-      returnDate: row.returnDate,
     };
 
     return (
       <tr key={row.id}>
         <td>{row.bookTitle}</td>
-        <td>{row.returnDate}</td>
         <td>{row.email}</td>
         <td>
           <Flex align="center" justify="center">
@@ -148,7 +144,6 @@ function RequestPage() {
           <thead>
             <tr>
               <th>Book title</th>
-              <th>Return Date</th>
               <th>Borrower</th>
               <th>Action</th>
             </tr>
