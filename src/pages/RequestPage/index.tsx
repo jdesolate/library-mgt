@@ -113,7 +113,7 @@ function RequestPage() {
   const rows = bookRequests && bookRequests.length > 0 ? bookRequests.map((row) => {
     const requestedBook = {
       bookId: row.bookId,
-      requestId: row.id,
+      requestId: row.id ?? '',
       returnDate: row.returnDate,
     };
 

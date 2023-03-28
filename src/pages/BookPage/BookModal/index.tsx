@@ -5,6 +5,7 @@ import {
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
 import {
+  addDoc,
   doc, DocumentData, updateDoc,
 } from 'firebase/firestore';
 import { useState } from 'react';
@@ -12,12 +13,15 @@ import { useState } from 'react';
 import swal from 'sweetalert';
 
 import { db } from '../../../configs/firebaseConfig';
+import { requestRef } from '../../../constants/firebaseRefs';
 import { useAuth } from '../../../contexts/AuthContext';
 import AccountType from '../../../enums/AccountType.enum';
 import BookStatus from '../../../enums/BookStatus.enum';
 import SweetAlertEnum from '../../../enums/SweetAlert.enum';
+import { BookRequest } from '../../../types/Book.type';
 
 import formatDate from '../../../utils/Date';
+import BookRequestForm from '../BookRequestForm';
 import * as S from '../styles';
 
 type Props = {
@@ -139,6 +143,31 @@ function BookModal(props: Props) {
     </Flex>
   );
 
+  const renderSaveChangesButton = onEditState && (
+    <Button
+      mt="lg"
+      styles={{
+        root: { backgroundColor: '#2148C0' },
+      }}
+      type="submit"
+      onClick={() => handleConfirm()}
+    >
+      Save Changes
+    </Button>
+  );
+
+  const renderBookRequestForm = (
+    <BookRequestForm
+      bookDetails={{
+        bookId: form.values.accessionNumber,
+        bookTitle: form.values.title,
+      }}
+      isBookAvailable={isBookAvailable}
+      isUserStudent={!isUserAdmin}
+      userEmail={userDetails?.email ?? ''}
+    />
+  );
+
   return (
     <Modal
       centered
@@ -245,18 +274,8 @@ function BookModal(props: Props) {
               </S.SwitchWrapper>
             </Flex>
           </Stack>
-          {onEditState && (
-            <Button
-              mt="lg"
-              styles={{
-                root: { backgroundColor: '#2148C0' },
-              }}
-              type="submit"
-              onClick={() => handleConfirm()}
-            >
-              Save Changes
-            </Button>
-          )}
+          {renderSaveChangesButton}
+          {renderBookRequestForm}
         </Stack>
       </form>
     </Modal>
