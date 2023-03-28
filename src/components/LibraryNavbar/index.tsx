@@ -5,6 +5,7 @@ import {
   IconDeviceDesktopAnalytics,
   IconUser,
   IconLogout,
+  IconBookUpload,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -64,11 +65,12 @@ function LibraryNavbar() {
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const navRoute = [routes.BOOKS, routes.REQUESTS];
+  const navRoute = [routes.BOOKS, routes.REQUESTS, routes.ROLES];
 
   const navLinks = [
     { icon: IconDeviceDesktopAnalytics, label: 'Dashboard' },
-    { icon: IconUser, label: 'Book Requests' },
+    { icon: IconBookUpload, label: 'Book Requests' },
+    { icon: IconUser, label: 'User Roles' },
   ];
 
   const handleNavigate = (index: number) => {

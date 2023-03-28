@@ -6,6 +6,7 @@ import BookPage from './pages/BookPage';
 import ErrorPage from './pages/Error';
 import Home from './pages/Home';
 import RequestPage from './pages/RequestPage';
+import RolesPage from './pages/RolesPage';
 
 function App() {
   return (
@@ -27,6 +28,14 @@ function App() {
             </ProtectedRoute>
           )}
           path="/requests"
+        />
+        <Route
+          element={(
+            <ProtectedRoute>
+              <RolesPage />
+            </ProtectedRoute>
+          )}
+          path="/roles"
         />
         <Route element={<ErrorPage />} path="/*" />
       </Routes>

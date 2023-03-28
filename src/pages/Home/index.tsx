@@ -7,12 +7,11 @@ import {
   TextInput,
   Text,
   Flex,
-  Select,
   Container,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
-import { IconLock, IconUser, IconUserEdit } from '@tabler/icons-react';
+import { IconLock, IconUser } from '@tabler/icons-react';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -56,7 +55,6 @@ export default function Home() {
     },
 
     validate: {
-      accountType: (val) => (val.length <= 1 ? 'Please indicate the account type' : null),
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
@@ -116,18 +114,6 @@ export default function Home() {
     </Group>
   );
 
-  const renderAccountTypeField = isTypeRegister && (
-    <Select
-      data={[AccountType.STUDENT, AccountType.ADMIN]}
-      error={form.errors.accountType
-        && 'Please indicate the account type'}
-      icon={<IconUserEdit color="#2148C0" />}
-      placeholder="Your account type"
-      value={form.values.accountType}
-      onChange={(value: AccountType) => form.setFieldValue('accountType', value)}
-    />
-  );
-
   const renderForm = isForgotPasswordClicked ? (
     <ForgotPassword toggleForgotPasswordState={setIsForgotPasswordClicked} />
   ) : (
@@ -158,7 +144,6 @@ export default function Home() {
           value={form.values.password}
           onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
         />
-        {renderAccountTypeField}
         {renderForgotPassword}
         <Button
           styles={{

@@ -5,11 +5,13 @@ import {
   doc, getDocs, query, updateDoc, where,
 } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import swal from 'sweetalert';
 
 import { LibraryLoader, PageContainer } from '../../components';
 import { db } from '../../configs/firebaseConfig';
 import { requestRef } from '../../constants/firebaseRefs';
+import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
 import AccountType from '../../enums/AccountType.enum';
 import BookStatus from '../../enums/BookStatus.enum';
@@ -33,6 +35,11 @@ function RequestPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [bookRequests, setBookRequests] = useState<BookRequest[]>();
+  const navigate = useNavigate();
+
+  if (!isUserAdmin) {
+    navigate(routes.HOME);
+  }
 
   useEffect(() => {
     async function fetchRequests() {
