@@ -142,7 +142,7 @@ function RequestPage() {
 
   return (
     <PageContainer shouldShowNavbar={isUserAdmin}>
-      <Paper h="90vh" m="lg" p="xl" sx={{ overflow: 'auto' }} w="70vw">
+      <Paper h="90vh" m="xl" p="lg" sx={{ overflow: 'auto' }} w="85vw">
         {renderLoader}
         <Table miw={800} verticalSpacing="xs">
           <thead>
