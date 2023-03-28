@@ -1,13 +1,12 @@
 import {
-  Navbar, Tooltip, UnstyledButton, createStyles, Stack, rem, Center,
+  Navbar, Tooltip, UnstyledButton, createStyles, Stack, rem,
 } from '@mantine/core';
 import {
   IconDeviceDesktopAnalytics,
   IconUser,
   IconLogout,
 } from '@tabler/icons-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import swal from 'sweetalert';
 
@@ -16,7 +15,6 @@ import routes from '../../constants/routes';
 import { useAuth } from '../../contexts/AuthContext';
 
 import SweetAlertEnum from '../../enums/SweetAlert.enum';
-import SchoolLogo from '../SchoolLogo';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -64,7 +62,7 @@ function NavbarLink({
 
 function LibraryNavbar() {
   const { logout } = useAuth();
-  const [active, setActive] = useState(0);
+  const location = useLocation();
   const navigate = useNavigate();
   const navRoute = [routes.BOOKS, routes.REQUESTS];
 
@@ -75,7 +73,6 @@ function LibraryNavbar() {
 
   const handleNavigate = (index: number) => {
     navigate(navRoute[index]);
-    setActive(index);
   };
 
   const links = navLinks.map((link, index) => {
@@ -84,7 +81,7 @@ function LibraryNavbar() {
     return (
       <NavbarLink
         key={label}
-        active={index === active}
+        active={location.pathname === navRoute[index]}
         icon={icon}
         label={label}
         onClick={() => handleNavigate(index)}
