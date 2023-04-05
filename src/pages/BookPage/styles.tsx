@@ -67,7 +67,7 @@ export const BooksWrapper = styled.div`
 `;
 
 export const SearchWrapper = styled.div`
-  max-width: 450px;
+  max-width: 500px;
 
   @media screen and (max-width: 450px) {
     width: 100%;

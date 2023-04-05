@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Button,
   Paper,
+  Select,
   SimpleGrid,
   Text,
   TextInput,
@@ -29,6 +30,12 @@ import BookModal from './BookModal';
 
 import * as S from './styles';
 
+enum SearchType {
+  KEYWORDS = 'keywords',
+  BOOKTYPE = 'bookType',
+  TITLE = 'title',
+}
+
 function BookPage() {
   const { userDetails, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -36,6 +43,7 @@ function BookPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [books, setBooks] = useState<Book[]>();
   const [filteredBooks, setFilteredBooks] = useState<Book[]>();
+  const [searchType, setSearchType] = useState<SearchType>(SearchType.TITLE);
   const [currentBook, setCurrentBook] = useState<Book | null>();
   const theme = useMantineTheme();
   const [searchInput, setSearchInput] = useState<string>('');
@@ -75,14 +83,16 @@ function BookPage() {
     fetchBooks();
   }, [isStatusUpdated]);
 
-  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
   const handleSearch = () => {
     setFilteredBooks(books?.filter(
-      (book) => book.bookType.toLowerCase().includes(searchInput.toLowerCase()),
+      (book) => book[searchType].toLowerCase().includes(searchInput.toLowerCase()),
     ));
+  };
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    handleSearch();
   };
 
   const handleSearchOnChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +124,19 @@ function BookPage() {
 
   const renderLoader = isLoading && <LibraryLoader />;
 
+  const searchTypeData = [
+    SearchType.TITLE.toUpperCase(),
+    SearchType.BOOKTYPE.toUpperCase(),
+    SearchType.KEYWORDS.toUpperCase(),
+  ];
+
+  const handleSearchType = (value: SearchType) => {
+    const searchTypeValue = value.toLowerCase() === SearchType.BOOKTYPE.toLowerCase()
+      ? SearchType.BOOKTYPE : value.toLowerCase();
+
+    setSearchType(searchTypeValue as SearchType);
+  };
+
   return (
     <PageContainer shouldShowNavbar={isUserAdmin}>
       <Paper bg="transparent" h="95vh" p="xl">
@@ -131,25 +154,36 @@ function BookPage() {
           <S.BookSection>
             <S.SearchWrapper>
               <form onSubmit={handleFormSubmit}>
-                <TextInput
-                  placeholder="Search for a book here"
-                  radius={5}
-                  rightSection={(
-                    <ActionIcon
-                      color={theme.primaryColor}
-                      radius="xl"
-                      size={32}
-                      type="submit"
-                      variant="filled"
-                      onClick={handleSearch}
-                    >
-                      <IconSearch size="1.1rem" stroke={1.5} />
-                    </ActionIcon>
-                  )}
-                  rightSectionWidth={42}
-                  size="md"
-                  onChange={handleSearchOnChange}
-                />
+                <SimpleGrid
+                  breakpoints={[{ cols: 1, maxWidth: 'xs' }]}
+                  cols={2}
+                >
+                  <Select
+                    withinPortal
+                    data={searchTypeData}
+                    placeholder="Search with"
+                    size="md"
+                    onChange={(value: SearchType) => handleSearchType(value)}
+                  />
+                  <TextInput
+                    placeholder="Search for a book here"
+                    radius={5}
+                    rightSection={(
+                      <ActionIcon
+                        color={theme.primaryColor}
+                        radius="xl"
+                        size={32}
+                        type="submit"
+                        variant="filled"
+                      >
+                        <IconSearch size="1.1rem" stroke={1.5} />
+                      </ActionIcon>
+                    )}
+                    rightSectionWidth={42}
+                    size="md"
+                    onChange={handleSearchOnChange}
+                  />
+                </SimpleGrid>
               </form>
             </S.SearchWrapper>
             <Text color="white" my="sm" size="1.5rem" weight={600}>
